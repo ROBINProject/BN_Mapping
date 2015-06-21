@@ -1,0 +1,35 @@
+Modelo Julián
+Inició: 19:22
+Terminó: 20:32
+Resultados del entrenamiento con datos completos (1,922,336 pixeles)
+          0   20.217        
+          1   15.2909          24.3658
+		 44   13.9268          0.0000
+----------------------------------------------------
+Modelo_estructural       Last changed 14/04/27 20:32
+
+       15   Nodes          (not including constants)
+        0   Decision nodes
+        0   Utility nodes
+        0   Constant nodes
+        0   Title or text notation entries
+            ----------------------------------------
+       22   Links                 (not disconnected)
+        0   Disconnected links
+        0   Time delay links
+        0   Directed cycles         (without delays)
+       10   Loops     (disregarding link directions)
+        3   Separate networks   (ignoring constants)
+            ----------------------------------------
+     1225   Conditional probabilities total
+        0   Decision conditions
+            ----------------------------------------
+        0   Findings nodes (not including constants)
+        0   Negative or likelihood findings nodes
+----------------------------------------------------
+
+Generación de archivo de integridad por procesamiento de casos datos completos (1,922,336 pixeles)
+Inició:  21:02
+Terminó: 21:04
+
+

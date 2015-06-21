@@ -1,0 +1,3 @@
+finding(x)
+finding(y)
+bel(I, Alta)
