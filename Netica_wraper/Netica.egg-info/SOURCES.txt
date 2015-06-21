@@ -1,0 +1,10 @@
+README
+setup.py
+Netica.egg-info/PKG-INFO
+Netica.egg-info/SOURCES.txt
+Netica.egg-info/dependency_links.txt
+Netica.egg-info/requires.txt
+Netica.egg-info/top_level.txt
+netica/__init__.py
+netica/netica.py
+netica/test/__init__.py

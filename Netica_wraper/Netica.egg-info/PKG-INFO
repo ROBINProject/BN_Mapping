@@ -1,0 +1,19 @@
+Metadata-Version: 1.1
+Name: Netica
+Version: 0.0.1
+Summary: Python wrapper for Netica C API
+Home-page: UNKNOWN
+Author: Kees den Heijer
+Author-email: C.denheijer@tudelft.nl
+License: GPL
+Description: Python wrapper for Netica C API
+Keywords: Netica,Bayesian Network
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Text Processing :: Markup :: LaTeX
+Classifier: Natural Language :: English
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: License :: General Public License (GPL)
