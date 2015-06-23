@@ -6,13 +6,32 @@ Created on Sat Jun 20 01:09:47 2015
 
 Example of wrapping cos function from math.h using ctypes. 
 """
-
-import ctypes as ct 
+import os
+import exceptions
+import logging
+logger = logging.getLogger(__name__)
+import ctypes
 from ctypes import windll
 from ctypes.util import find_library
+from ctypes import cdll,c_char,c_char_p,c_void_p,c_int,c_double,create_string_buffer,c_bool,POINTER,byref
+c_double_p = POINTER(c_double)
+from numpy.ctypeslib import ndpointer
+import numpy as np
+from numpy import array
+import platform
+import os.path
 
-from ctypes import *
-libm.NewNeticaEnviron_ns.argtypes
+# constants
+MESGLEN = 600
+NO_VISUAL_INFO=0
+NO_WINDOW=0x10
+MINIMIZED_WINDOW=0x30
+REGULAR_WINDOW=0x70
+ENTROPY_SENSV = 0x02
+REAL_SENSV = 0x04
+VARIANCE_SENSV = 0x100
+VARIANCE_OF_REAL_SENSV = 0x104
+
 
 # benviron_ns *env = NewNeticaEnviron_ns ("your unique license", NULL, NULL);
 
@@ -122,6 +141,14 @@ x3 = c_double_p()
 x4 = c_double_p()
 expvalue = libm.GetNodeExpectedValue_bn(node_p, byref(stdev), x3, x4) # expected value
 
+# Sensitivity
+# Type might be: VARIANCE_OF_REAL_SENSV or ENTROPY_SENSV
+Qnode_p = libm.NthNode_bn(nl_p, 1) # Target node
+Vnode_p = libm.NthNode_bn(nl_p, 2) # Target node
+
+libm.NewSensvToFinding_bn.argtypes = [c_void_p, c_void_p, c_int]
+libm.NewSensvToFinding_bn.restype = c_void_p
+sensv_bn = libm.NewSensvToFinding_bn(Qnode_p, Vnode_p, ENTROPY_SENSV)
 
 """
 compile net
