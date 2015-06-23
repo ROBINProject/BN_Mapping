@@ -1,0 +1,3 @@
+[submodule "zModulo_cvNetica"]
+	path = zModulo_cvNetica
+	url = git@github.com:ROBINProject/CVNetica.git

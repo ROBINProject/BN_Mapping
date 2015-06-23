@@ -4,22 +4,35 @@ Created on Sat Jun 20 01:09:47 2015
 
 @author: Miguel
 
-Example of wrapping cos function from math.h using ctypes. 
+Example of wrapping Netica.dll using ctypes. 
 """
-import os
-import exceptions
-import logging
-logger = logging.getLogger(__name__)
-import ctypes
-from ctypes import windll
+
+# import ctypes for wrapping netica.dll
 from ctypes.util import find_library
-from ctypes import cdll,c_char,c_char_p,c_void_p,c_int,c_double,create_string_buffer,c_bool,POINTER,byref
+from ctypes import windll, c_char, c_char_p, c_void_p, c_int, c_double
+from ctypes import create_string_buffer, c_bool, POINTER,byref
 c_double_p = POINTER(c_double)
+
+# Other libraries
+import sys
+import os
 from numpy.ctypeslib import ndpointer
 import numpy as np
 from numpy import array
 import platform
 import os.path
+import logging
+logger = logging.getLogger(__name__)
+
+# Function to find files based on a pattern in any machine
+import fnmatch
+def find(pattern, path):
+    result = []
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            if fnmatch.fnmatch(name, pattern):
+                result.append(os.path.join(root, name))
+    return result
 
 # constants
 MESGLEN = 600
@@ -33,43 +46,29 @@ VARIANCE_SENSV = 0x100
 VARIANCE_OF_REAL_SENSV = 0x104
 
 
-# benviron_ns *env = NewNeticaEnviron_ns ("your unique license", NULL, NULL);
-
 # find and load the library
-netica_dir = "C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/Netica/lib/64 bit/"
-libm = ctypes.windll.LoadLibrary(find_library(netica_dir + "netica"))
+netica_dir = os.path.abspath("../Netica/")
+libm = windll.LoadLibrary(find_library(netica_dir + "\\netica"))
 
-# (const char* license, environ_ns* env, const char* locn)
+# benviron_ns *env = NewNeticaEnviron_ns ("your unique license", NULL, NULL);
+# parameters: (const char* license, environ_ns* env, const char* locn)
 # New NETICA environment
-libm.NewNeticaEnviron_ns.argtypes = [c_char_p, c_void_p, c_char_p]
-libm.NewNeticaEnviron_ns.restype = c_void_p
-env_p = libm.NewNeticaEnviron_ns(None, None, None) # env_p
+# Initialize a pynetica instance/env using password in a text file
+licensefile = netica_dir + "inecol_netica.txt"
+licensia = open(licensefile, 'r').readlines()[0].strip().split()[0]
+env_p = c_void_p(libm.NewNeticaEnviron_ns(licensia, None, None))
 
 # Initialize NETICA environment
 mesg = create_string_buffer(MESGLEN)
-libm.InitNetica2_bn.argtypes = [c_void_p, c_char_p]
-libm.InitNetica2_bn.restype = c_int
-res = libm.InitNetica2_bn(env_p, mesg)
+res = c_int(libm.InitNetica2_bn(env_p, mesg))
 logger.info(mesg.value)
 
-"""
-Creates and returns a new net, initially having no nodes
-"""
-# (const char* name, environ_ns* env)
-libm.NewNet_bn.argtypes = [c_char_p, c_void_p]
-libm.NewNet_bn.restype = c_void_p
-net_p = libm.NewNet_bn("prueba", env_p) # net_p
-
 # Reads a NETICA net from file
-# (stream_ns* file, int options)
-netica_net = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN/Datos RoBiN/México/0_Vigente/GIS/Mapas_base/wetransfer-cbc615/Temperatura.neta"
-libm.NewFileStream_ns.argtypes = [c_char_p, c_void_p, c_char_p]
-libm.NewFileStream_ns.restype = c_void_p
+# parameters: (stream_ns* file, int options)
+netica_net = find("temp*.neta", "c:/users/")[0]
 name = create_string_buffer(netica_net)
-file_p = libm.NewFileStream_ns (name, env_p, None) # file_p
-libm.ReadNet_bn.argtypes = [c_void_p, c_int]
-libm.ReadNet_bn.restype = c_void_p
-net_p = libm.ReadNet_bn(file_p, REGULAR_WINDOW) # net_p
+file_p = c_void_p(libm.NewFileStream_ns (name, env_p, None)) # file_p
+net_p = c_void_p(libm.ReadNet_bn(file_p, REGULAR_WINDOW)) # net_p
 
 
 """
@@ -77,29 +76,23 @@ get net nodes
 """
 zerochar_type = c_char*0
 # (const net_bn* net, const char options[])
-libm.GetNetNodes2_bn.argtypes = [c_void_p, zerochar_type]
-libm.GetNetNodes2_bn.restype = c_void_p
-nl_p = libm.GetNetNodes2_bn(net_p, zerochar_type()) # nl_p
+nl_p = c_void_p(libm.GetNetNodes2_bn(net_p, zerochar_type())) # nl_p
 
 """
 get number of nodes
 """
 # (const nodelist_bn* nodes)
-libm.LengthNodeList_bn.argtypes = [c_void_p]
-libm.LengthNodeList_bn.restype = c_int
-nnodes = libm.LengthNodeList_bn(nl_p) # nnodes
+nnodes = c_int(libm.LengthNodeList_bn(nl_p)) # nnodes
 
-libm.NthNode_bn.argtypes = [c_void_p, c_int]
-libm.NthNode_bn.restype = c_void_p
+# Pick one node by index number
 index = 2
-node_p = libm.NthNode_bn(nl_p, index) # node_p
+node_p = c_void_p(libm.NthNode_bn(nl_p, index)) # node_p
+
 """
 Returns the node name as string
 """
 # (const node_bn* node)
-libm.GetNodeName_bn.argtypes = [c_void_p]
-libm.GetNodeName_bn.restype = c_char_p
-name = libm.GetNodeName_bn(node_p) # name    
+name = c_char_p(libm.GetNodeName_bn(node_p)) # name    
 
 """
 Returns DISCRETE_TYPE if the variable corresponding 
