@@ -8,13 +8,13 @@ Example of wrapping Netica.dll using ctypes.
 """
 
 # import ctypes for wrapping netica.dll
+import ctypes as ct
 from ctypes.util import find_library
 from ctypes import windll, c_char, c_char_p, c_void_p, c_int, c_double
 from ctypes import create_string_buffer, c_bool, POINTER,byref
 c_double_p = POINTER(c_double)
 
 # Other libraries
-import sys
 import os
 from numpy.ctypeslib import ndpointer
 import numpy as np
@@ -34,6 +34,8 @@ def find(pattern, path):
                 result.append(os.path.join(root, name))
     return result
 
+
+
 # constants
 MESGLEN = 600
 NO_VISUAL_INFO=0
@@ -44,17 +46,20 @@ ENTROPY_SENSV = 0x02
 REAL_SENSV = 0x04
 VARIANCE_SENSV = 0x100
 VARIANCE_OF_REAL_SENSV = 0x104
-
+CONTINUOUS_TYPE=1
+DISCRETE_TYPE = 2
+TEXT_TYPE = 3
+BELIEF_UPDATE = 0x100
 
 # find and load the library
 netica_dir = os.path.abspath("../Netica/")
-libm = windll.LoadLibrary(find_library(netica_dir + "\\netica"))
+libm = windll.LoadLibrary(find_library(netica_dir + "/netica"))
 
 # benviron_ns *env = NewNeticaEnviron_ns ("your unique license", NULL, NULL);
 # parameters: (const char* license, environ_ns* env, const char* locn)
 # New NETICA environment
 # Initialize a pynetica instance/env using password in a text file
-licensefile = netica_dir + "inecol_netica.txt"
+licensefile = netica_dir + "/inecol_netica.txt"
 licensia = open(licensefile, 'r').readlines()[0].strip().split()[0]
 env_p = c_void_p(libm.NewNeticaEnviron_ns(licensia, None, None))
 
@@ -63,12 +68,28 @@ mesg = create_string_buffer(MESGLEN)
 res = c_int(libm.InitNetica2_bn(env_p, mesg))
 logger.info(mesg.value)
 
+
 # Reads a NETICA net from file
 # parameters: (stream_ns* file, int options)
-netica_net = find("temp*.neta", "c:/users/")[0]
+dir_inicio = os.environ["homepath"]
+dir_inicio = dir_inicio + "\\documents"
+netica_net = find("01 - ChestClinic.dne", dir_inicio)[0]
 name = create_string_buffer(netica_net)
 file_p = c_void_p(libm.NewFileStream_ns (name, env_p, None)) # file_p
 net_p = c_void_p(libm.ReadNet_bn(file_p, REGULAR_WINDOW)) # net_p
+
+file_name = c_char_p (libm.GetNetFileName_bn (net_p))
+net_name = c_char_p (libm.GetNetName_bn(net_p))
+
+"""
+compile net
+"""
+# (net_bn* net)
+libm.CompileNet_bn(netica_net)
+
+# Set autoupdate
+libm.SetNetAutoUpdate_bn(net_p, 1)
+libm.GetNetAutoUpdate_bn(net_p)
 
 
 """
@@ -85,14 +106,19 @@ get number of nodes
 nnodes = c_int(libm.LengthNodeList_bn(nl_p)) # nnodes
 
 # Pick one node by index number
-index = 2
+index = 1
 node_p = c_void_p(libm.NthNode_bn(nl_p, index)) # node_p
+
+#(node_bn*) GetNodeNamed_bn (const char* name, const net_bn* net);
+node_p = c_void_p(libm.GetNodeNamed_bn("Tuberculosis", net_p)) # node_p
 
 """
 Returns the node name as string
 """
 # (const node_bn* node)
 name = c_char_p(libm.GetNodeName_bn(node_p)) # name    
+name.value
+
 
 """
 Returns DISCRETE_TYPE if the variable corresponding 
@@ -100,25 +126,32 @@ to node is discrete (digital), and CONTINUOUS_TYPE
 if it is continuous (analog)
 """
 # (const node_bn* node)
-libm.GetNodeType_bn.argtypes = [c_void_p]
-libm.GetNodeType_bn.restype = c_int
-node_type = libm.GetNodeType_bn(node_p) # node_type      
+node_type = c_int(libm.GetNodeType_bn(node_p)) # node_type      
+if node_type.value == DISCRETE_TYPE:
+    print ("Discrete node")
+else:
+    print("Continuous node")
 
 """
 get number of states
 """
 # (const node_bn* node)
-libm.GetNodeNumberStates_bn.argtypes = [c_void_p]
-libm.GetNodeNumberStates_bn.restype = c_int
-nstates = libm.GetNodeNumberStates_bn(node_p) # nstates
+nstates = c_int(libm.GetNodeNumberStates_bn(node_p)) # nstates
+nstates.value
 
 """
 get node beliefs
 """
+
 # (node_bn* node)
-libm.GetNodeBeliefs_bn.argtypes = [c_void_p]
-libm.GetNodeBeliefs_bn.restype = ndpointer('float32', ndim=1, shape=(nstates,),flags='C')
+libm.EnterFinding_bn(node_p,1)
 prob_bn = libm.GetNodeBeliefs_bn(node_p) # prob_bn
+prob_bn = ct.cast(prob_bn, ct.POINTER(ct.c_float))[0:nstates.value]
+
+# Value for a continuos node
+# (node_bn* node, double value)
+libm.EnterNodeValue_bn(node_p, 2)
+
 
 """
 Returns the expected real value of node, based on the current beliefs
@@ -127,12 +160,10 @@ standard deviation. Returns UNDEF_DBL if the expected value couldn't
 be calculated.
 """
 # (node_bn* node, double* std_dev, double* x3, double* x4)
-libm.GetNodeExpectedValue_bn.argtypes = [c_void_p, c_double_p, c_double_p, c_double_p]
-libm.GetNodeExpectedValue_bn.restype = c_double
 stdev = c_double(9999) # standard deviation
 x3 = c_double_p()
 x4 = c_double_p()
-expvalue = libm.GetNodeExpectedValue_bn(node_p, byref(stdev), x3, x4) # expected value
+expvalue = c_double(libm.GetNodeExpectedValue_bn(node_p, byref(stdev), x3, x4)) # expected value
 
 # Sensitivity
 # Type might be: VARIANCE_OF_REAL_SENSV or ENTROPY_SENSV
@@ -143,22 +174,9 @@ libm.NewSensvToFinding_bn.argtypes = [c_void_p, c_void_p, c_int]
 libm.NewSensvToFinding_bn.restype = c_void_p
 sensv_bn = libm.NewSensvToFinding_bn(Qnode_p, Vnode_p, ENTROPY_SENSV)
 
-"""
-compile net
-"""
-# (net_bn* net)
-libm.CompileNet_bn.argtypes = [c_void_p]
-libm.CompileNet_bn.restype = None
-libm.CompileNet_bn(net)
-
-# Set autoupdate
-auto_update = 1
-libm.SetNetAutoUpdate_bn.argtypes = [c_void_p, c_int]
-libm.SetNetAutoUpdate_bn.restype = None
-libm.SetNetAutoUpdate_bn(net, auto_update)
 
 
-
+libm.CloseNetica_bn(env_p)
 
 
 
