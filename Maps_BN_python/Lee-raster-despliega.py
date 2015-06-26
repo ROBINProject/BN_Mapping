@@ -18,7 +18,6 @@ imagepath = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN/Dat
 archivos = os.listdir(imagepath)
 archivos = [nombre for nombre in archivos if re.findall("\\.tif$", nombre)]
 mapa = [re.findall("mx_runoff", nombre) for nombre in archivos]
-archivos[re.("mx_runoff", nombre) for nombre in archivos]
 
 # Lee el mapa de interés
 gdal.AllRegister()

@@ -35,7 +35,7 @@ gama.valores <- range(values(mapa.ref),na.rm = T)
 plot(mapa.ref)
 
 # Location of tif & nc files with LPJmL
-dir.lpj <- sub("Mapas_base", "LPJ", dir$GIS.in)
+dir.lpj <- sub("Mapas_base", "LPJ/LU_rcp2p6_gfdl-esm2m_transientCO2_p1", dir$GIS.in)
 nc.lpj <- dir(dir.lpj)[grepl("\\.nc$", dir(dir.lpj))]
 
 # Open nc and read file descriptions which are store in a list: [var][details]
