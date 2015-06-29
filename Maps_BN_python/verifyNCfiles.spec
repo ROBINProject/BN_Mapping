@@ -1,7 +1,7 @@
 # -*- mode: python -*-
 a = Analysis(['verifyncfiles.py'],
              pathex=['C:\\Users\\Miguel\\Documents\\0 Versiones\\2 Proyectos\\BN_Mapping\\Maps_BN_python'],
-             hiddenimports=[],
+             hiddenimports=['netCDF4'],
              hookspath=None,
              runtime_hooks=None)
 pyz = PYZ(a.pure)
