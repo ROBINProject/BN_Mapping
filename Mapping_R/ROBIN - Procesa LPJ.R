@@ -1,5 +1,5 @@
 # @author Miguel Equihua 
-# contact: miguel.equihua@inecol.mx
+# contact: equihuam@gmail.com
 # Institution: Inecol
 # Reading and reprojection of output of LPJmL to make it compatible with EI
 #
