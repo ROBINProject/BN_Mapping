@@ -31,10 +31,22 @@ names(datos.netica.c1) <- names.variables
 names(datos.netica.map) <- names.variables
 
 # Identify ZVH_BN with maximum probability
-datos.netica.c1$ZVH_BN <- apply(datos.netica.c1[,3:11], 1, 
+zz.var <- integer()
+zz.sum <- numeric()
+for (i in (1:length(datos.netica.map$x)))
+{
+  zz.sum <- 1 - sum(datos.netica.map[i, 3:13])
+  zz.var[i] <- which.max(datos.netica.map[i, 3:13])
+}
+
+datos.netica.c1$ZVH_BN <- apply(datos.netica.c1[,3:13], 1, 
                                  function(x) which.max(x))
-datos.netica.map$ZVH_BN <- apply(datos.netica.map[,3:11], 1, 
+datos.netica.map$ZVH_BN <- apply(datos.netica.map[,3:13], 1, 
                                  function(x) which.max(x))
+
+identical(zz.var, datos.netica.map$ZVH_BN)
+
+identical(zz.var, datos.netica.map$ZVH_BN)
 
 # preparare map data for mapping
 # Read coordinates from the map file used to produced the NETICA results
