@@ -18,13 +18,15 @@ archivo = open(archivo_nombre[0], "r")
 texto = archivo.readlines()
 archivo.close()
 
-texto[0]
-texto[1].split("|")[0].split(":")
+# Corrige pequeñas imperfecciones de formato en el texto para facilitar 
+# la separación de componentes
+texto = [re.sub("(\d):(\d)", "\\1: \\2", tx) for tx in texto]
+
+# Analiza el texto
 datos = []
 for z in texto[1:] :
     items = []
     for x in z.split("|"):
-        x = re.sub(":", ": ", x)
         items.append([item for item in x.split(" ") if item != " " and item != "" and item !="\n"])
         lista_1 = [item for sublist in items for item in sublist]  
     datos.append(lista_1[0])
@@ -42,3 +44,21 @@ for z in texto[1:] :
             dat_y.append(map(float, [y])[0])
     datos.append([dat_x, dat_y])       
 
+datos_dict = {}
+for d in datos:
+    if isinstance(d, basestring):
+        datos_dict.update({d:[]})
+        item = d
+    else:
+        datos_dict[item] = [(x, y) for x in d[0] for y in d[1]]
+
+with open(rutaBase + rutaTextos + u"ZVH-curva_calibración.txt", "wb") as f:
+    for d in datos_dict.keys():
+        f.write(d + "\n")        
+        for item in datos_dict[d]:
+            f.write(str(item[0]) + ",")
+        f.write("\n")
+        for item in datos_dict[d]:
+            f.write(str(item[1]) + ",")
+        f.write("\n")
+    f.close()
