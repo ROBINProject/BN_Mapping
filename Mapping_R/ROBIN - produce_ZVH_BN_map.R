@@ -53,29 +53,12 @@ write.table(cbind(coordinates(datos.zvh.clima), datos.zvh.clima@data), sep=",",
             file = paste(dir.ref, "/ZVH-clima-mx.csv", sep=""), row.names = FALSE)
 options(scipen=opt.scipen)
 
-
-
 # Generate the ZHV_BN map
 rast_netica.map <- raster(datos.netica.map[,"ZVH_BN"])
 projection(rast_netica.map) <- projection(mapa.ref)
-plot(rast_netica.map)
-
-# Load de "observed" ZVH
-# Reference map: DEM from CONABIO in GD
-dir.ref <- paste(dir$GIS.in, "/2004/clima", sep="")
-mapas.base <- dir(dir.ref, pattern = "tif$")
-arch.ref <- paste(dir.ref, mapas.base[grepl("Zvh", mapas.base)], sep="/")
-mapa.ref <- raster(arch.ref)
-mapa.ref[mapa.ref==-999] <- NA
-mapa.ref <-extend(crop(mapa.ref, climat.2.df), climat.2.df)
-zvh.observ <- rasterToPoints(mapa.ref)
-
-
-# Igualo los mapas
 
 # Create the Geo-tiff for GIS use
 map.arch <-paste(dir.ref, "ZVH_RB_Mex.tif", sep="/")
 rf <- writeRaster(rast_netica.map, filename=map.arch, 
                   format="GTiff", overwrite=TRUE)
 
-datos.zvh.clima <- cbind(climat.2.df@coords, climat.2.df@data, zvh.observ, datos.netica.map@data)
