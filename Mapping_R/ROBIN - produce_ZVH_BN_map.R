@@ -46,8 +46,6 @@ datos.netica.map$ZVH_BN <- apply(datos.netica.map[,3:13], 1,
 
 identical(zz.var, datos.netica.map$ZVH_BN)
 
-identical(zz.var, datos.netica.map$ZVH_BN)
-
 # preparare map data for mapping
 # Read coordinates from the map file used to produced the NETICA results
 datos.netica.map[,1:2] <- climat.2.df@coords
@@ -65,3 +63,7 @@ plot(rast_netica.map)
 map.arch <-paste(dir.ref, "ZVH_RB_Mex.tif", sep="/")
 rf <- writeRaster(rast_netica.map, filename=map.arch, 
                   format="GTiff", overwrite=TRUE)
+
+datos.zvh.clima <- cbind(climat.2.df@coords, datos.netica.map@data, climat.2.df@data, )
+
+head(dd)
