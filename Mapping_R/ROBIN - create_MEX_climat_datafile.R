@@ -15,16 +15,17 @@ map.names <- unlist(lapply(mapas.base, function (s) strsplit(s, ".tif")[1]))
 
 # Read  climat data files in the "mapas.base" list from the directory
 maps.brik <- brick()
-for (map in mapas.base)
+for (map.name in mapas.base)
 {
-  arch.ref <- paste(dir.ref, map, sep="/")
-  mapa.ref <- raster(arch.ref)
-  mapa.ref[mapa.ref==-999] <- NA
-  maps.brik <- addLayer(maps.brik, mapa.ref)
+  arch.ref <- paste(dir.ref, map.name, sep="/")
+  mapa <- raster(arch.ref)
+  if (!identical(extent(mapa), extent(maps.brik)) ^ (map.name!=mapas.base[1]))
+      mapa <- extend(crop(mapa, maps.brik), maps.brik)
+  maps.brik <- addLayer(maps.brik, mapa)
 }
 names(maps.brik) <- map.names
 
-# Add the GEM data: dem30_mean1000,dem30_sd1000
+# Add the DEM data: dem30_mean1000,dem30_sd1000
 dir.ref <- gsub("/clima", "", dir.ref)
 mapas.base <- dir(dir.ref, pattern = "dem.+\\.tif$")
 map.names <- unlist(lapply(mapas.base, function (s) strsplit(s, ".tif")[1]))
@@ -32,11 +33,14 @@ for (map in mapas.base)
 {
   arch.ref <- paste(dir.ref, map, sep="/")
   mapa.ref <- raster(arch.ref)
-  mapa.ref[mapa.ref==-999] <- NA
   maps.brik <- addLayer(maps.brik, mapa.ref)
 }
+names(maps.brik)
 
-names(maps.brik) <- c(names(maps.brik)[-c(nlayers(maps.brik) - c(0,1))], map.names)
+# Eliminate NA or data labeled with very negative values like -9999
+
+maps.brik.2 <- maps.brik[!is.na(maps.brik)]
+
 
 # Generates de data.frame with all the variables
 climat.df <- rasterToPoints(maps.brik, spatial = T)
