@@ -9,11 +9,13 @@ import os
 import re
 from netCDF4 import Dataset as nc
 
-def dependencies_for_myprogram():
-    import numpy
-
 # Ubicación de los datos en formato nc
-curr_dir = os.curdir
+direct_ROBIN = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RobiN"
+direct_lpj = "/Datos RoBiN/México/0_Vigente/GIS/LPJ" 
+os.chdir(direct_ROBIN + direct_lpj)
+directorios = os.walk(".")
+sub_dir = next(directorios)[1][0]
+os.chdir(direct_ROBIN + "/" + sub_dir)
 archivos = os.listdir(os.curdir)
 archivos = [nombre for nombre in archivos if re.findall("\\.nc$", nombre)]
 

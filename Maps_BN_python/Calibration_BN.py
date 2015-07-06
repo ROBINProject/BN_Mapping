@@ -13,7 +13,7 @@ rutaBase = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN/"
 rutaTextos = u"Datos RoBiN/México/0_Vigente/GIS/Mapas_base/"
 os.chdir(rutaBase + rutaTextos)
 archivosTexto = os.listdir(rutaBase + rutaTextos)
-archivo_nombre = [texto for texto in archivosTexto if re.findall("calibra", texto)]
+archivo_nombre = [texto for texto in archivosTexto if re.findall("_EM_", texto)]
 archivo = open(archivo_nombre[0], "r")
 texto = archivo.readlines()
 archivo.close()
@@ -52,7 +52,7 @@ for d in datos:
     else:
         datos_dict[item] = [(x, y) for x in d[0] for y in d[1]]
 
-with open(rutaBase + rutaTextos + u"ZVH-curva_calibración.txt", "wb") as f:
+with open(rutaBase + rutaTextos + u"ZHV_cal_EM_10_DEM.txt", "wb") as f:
     for d in datos_dict.keys():
         f.write(d + "\n")        
         for item in datos_dict[d]:

@@ -6,12 +6,12 @@
 #
 
 # File locations to get and store data Tablet: miguel_tab, Excritorio: miguel_esc
-dir <- ubica.trabajo(equipo="miguel_esc")
+dir <- ubica.trabajo(equipo="miguel_tab")
 
 # Location of climate maps in ROBIN-GISdata in "GD/2004"
-dir.ref <- paste(dir$GIS.in, "/2004/clima", sep="")
+dir.ref <- dir$GIS.in
 mapas.base <- dir(dir.ref, pattern = "txt$")
-arch.ref <- paste(dir.ref, mapas.base[grepl("curva", mapas.base)], sep="/")
+arch.ref <- paste(dir.ref, mapas.base[grepl("cal_EM", mapas.base)], sep="/")
 
 # Read calibration curve data prepared by python program from Netica output
 dat <- scan(arch.ref, what = "character", sep = "\n")
@@ -36,6 +36,7 @@ for (d in dat)
   }
 }
 
-
-dato[[2]][2]
+library(ggplot2)
+qplot(dato[[2]][[2]]$x, dato[[2]][[2]]$y, data = dato[[2]][[2]]) + 
+       geom_smooth(method = "loess", size = 2)
 
