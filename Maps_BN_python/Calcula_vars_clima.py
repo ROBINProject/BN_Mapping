@@ -36,5 +36,6 @@ for col in range(1,13):
     pp_tmx  = pd.concat([pp_tmx, pd.DataFrame(data={pp_name:datos[pp_col] / datos[tx_col]})], axis=1)
     tmx_tmn = pd.concat([tmx_tmn, pd.DataFrame(data={tt_name:datos[tx_col] - datos[tm_col]})], axis=1)
     
+# Genera la estructura de datos completa
 dd = pd.concat([datos, pp_tmx, tmx_tmn], axis=1)
 
