@@ -8,7 +8,7 @@
 # File locations to get and store data Tablet: miguel_tab, Excritorio: miguel_esc
 dir <- ubica.trabajo(equipo="miguel_tab")
 
-# Location of climate maps in ROBIN-GISdata in "GD/2004"
+# Location of classification data ROBIN-GISdata
 dir.ref <- dir$GIS.in
 mapas.base <- dir(dir.ref, pattern = "txt$")
 arch.ref <- paste(dir.ref, mapas.base[grepl("cal_EM", mapas.base)], sep="/")
