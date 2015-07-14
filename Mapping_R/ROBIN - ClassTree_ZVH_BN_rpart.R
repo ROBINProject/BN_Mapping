@@ -15,7 +15,7 @@ arbol2 <- rpart(Zvh_observed ~
                      dem30_mean1000 + dem30_sd1000 + x + y, 
                      data = d.c, method = "class")
 
-rpart.plot(arbol)
+rpart.plot(arbol2)
 
 library(rattle)
 rattle()
@@ -72,5 +72,9 @@ for (j in c(6:41, 43:66))
   gc()
 }
 
-row.names(boost.corr.DEM.2) <- names(boosted[,c(6:41, 43:66)])
+colnames(boost.corr.DEM.2) <- names(boosted[,c(6:41, 43:66)])
 qplot (boost.corr.1)
+
+b.c.df <- data.frame(boost.corr.DEM.2,
+                     row.names = rownames(boost.corr.DEM.2))
+write.csv(file = paste(dir.ref, "/zvh_dem_latlon_Clim_coors.csv", sep=""), x = boost.corr.DEM.2, row.names = T)
