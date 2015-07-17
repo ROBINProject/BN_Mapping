@@ -41,9 +41,10 @@ For documentation on Netica's objects and functions:
       to register its COM definition.
 
 """
-
 from win32com.client import Dispatch
 
+
+print "Welcome to Netica API for COM with Python!"
 # Vincula la interface COM de NETICA y activa la aplicación
 nt = Dispatch("Netica.Application")
 
@@ -51,7 +52,7 @@ nt = Dispatch("Netica.Application")
 lic_arch ="C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/BN_Mapping/Netica/inecol_netica.txt"
 licencia = open(lic_arch, "rb").read()
 nt.SetPassword(licencia)
-nt.SetWindowPosition(status="Regular") # Regular, Minimized, Maximized, Hidden
+nt.SetWindowPosition(status="Hidden") # Regular, Minimized, Maximized, Hidden
 # nt.SetWindowPosition(top=10, left=10, width=1000, height=700)
 
 
@@ -92,6 +93,7 @@ print "Given abnormal X-Ray, Asia visit, and lung cancer, the probability of TB 
 # Se libera el espacio de momoria usado por la red
 net.Delete()
 
+algo = raw_input (r"Press <enter> to quit.")
 
 
 
