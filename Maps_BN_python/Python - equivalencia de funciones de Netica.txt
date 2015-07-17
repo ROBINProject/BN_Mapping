@@ -1,0 +1,231 @@
+class POINTER(IApplication)(comtypes.gen._03941920_0CF3_11D3_B0EF_84606D20AE81_0_1_0.IApplication, POINTER(IDispatch))
+ |  Method resolution order:
+ |      POINTER(IApplication)
+ |      comtypes.gen._03941920_0CF3_11D3_B0EF_84606D20AE81_0_1_0.IApplication
+ |      POINTER(IDispatch)
+ |      comtypes.automation.IDispatch
+ |      POINTER(IUnknown)
+ |      IUnknown
+ |      _compointer_base
+ |      ctypes.c_void_p
+ |      _ctypes._SimpleCData
+ |      _ctypes._CData
+ |      __builtin__.object
+ |  
+ |  Methods defined here:
+ |  
+ |  __getattr__(self, name)
+ |      Implement case insensitive access to methods and properties
+ |  
+ |  __setattr__(self, name, value)
+ |      Implement case insensitive access to methods and properties
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data and other attributes defined here:
+ |  
+ |  __com_interface__ = <class 'comtypes.gen._03941920_0CF3_11D3_B0EF_8460...
+ |  
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from comtypes.gen._03941920_0CF3_11D3_B0EF_84606D20AE81_0_1_0.IApplication:
+ |  
+ |  ControlConcurrency(...)
+ |      Controls whether Netica operates single or multi-threaded, and how it does its multi-threading.  Like Netica-C ControlConcurrency_ns.
+ |  
+ |  ExecuteScript(...)
+ |      Executes a text script.  Like Netica-C ExecuteScript_ns.
+ |  
+ |  FileNamed(...)
+ |      Deprecated.  Use NewStream() instead.
+ |  
+ |  GetBNet(...)
+ |      Returns a BNet that Netica currently has in memory.  Each value of 'nth' returns a different one (first is 0), or NULL if there aren't that many.  Like Netica-C GetNthNet_bn.
+ |  
+ |  GetWindowPosition(...)
+ |      Sets the position and size of the overall window containing Netica Application (i.e. the GUI window) relative to the screen.  Like Netica-C GetAppWindowPosition_ns.
+ |  
+ |  NewBNet(...)
+ |      Creates a new empty BNet (i.e. Bayesian belief net or decision net).  Like Netica-C NewNet_bn.
+ |  
+ |  NewCaseset(...)
+ |      Creates an initially empty set of cases.  'name' argument is not required (i.e. may be empty).  Like Netica-C NewCaseset_cs.
+ |  
+ |  NewDatabaseManager(...)
+ |      Creates a new database manager, and have it connect with database.  Like Netica-C NewDBManager_cs.
+ |  
+ |  NewLearner(...)
+ |      Creates a new learner, which will learn using 'method' (one of "EM", "gradient.  Like Netica-C NewLearner_bn.
+ |  
+ |  NewMemoryStream(...)
+ |      Creates a new Streamer to write files in memory.  Like Netica-C NewMemoryStream_ns.
+ |  
+ |  NewStream(...)
+ |      Creates a new Streamer to represent the given file (for reading, writing, etc).  Like Netica-C NewFileStream_ns.
+ |  
+ |  PrintToMessagesWindow(...)
+ |      Prints the passed string to the Messages window.  Like Netica-C PrintToMessagesWindow_ns.
+ |  
+ |  Quit(...)
+ |      Exits Netica (i.e. make it quit).  If a human user has entered unsaved changes, this will check with the user first.  Like Netica-C CloseNetica_bn.
+ |  
+ |  ReadBNet(...)
+ |      Reads a BNet (Bayes net) from File.  'options' can be one of "NoVisualInfo", "NoWindow", or the empty string (means create a regular window).  Like Netica-C ReadNet_bn.
+ |  
+ |  SetPassword(...)
+ |      Sets Netica user password just for this session only.  Like the password passed to Netica-C NewNeticaEnviron_ns.
+ |  
+ |  SetWindowPosition(...)
+ |      Sets the position and size of the overall window containing Netica Application (i.e. the GUI window) relative to the screen.  'status' should be one of Regular, Hidden, Minimized or Maximized.  Like Netica-C SetAppWindowPosition_ns.
+ |  
+ |  TestFaultRecovery(...)
+ |      Tests Netica's fault recovery under extreme conditions.  Like Netica-C TestFaultRecovery_ns.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data descriptors inherited from comtypes.gen._03941920_0CF3_11D3_B0EF_84606D20AE81_0_1_0.IApplication:
+ |  
+ |  ArgumentChecking
+ |      To what degree Netica functions check their arguments.  Like Netica-C ArgumentChecking_ns.
+ |  
+ |  CaseFileDelimChar
+ |      Deprecated.  Use CaseFileDelimiter instead.
+ |  
+ |  CaseFileDelimiter
+ |      The character to use as a delimeter when creating case files.  Must be one of tab, space or comma.  Like Netica-C SetCaseFileDelimChar_ns.
+ |  
+ |  CaseFileMissingDataSymbol
+ |      The character to use to indicate missing data when creating case files.  Must be one of tab, space or comma.  Like Netica-C SetMissingDataChar_ns.
+ |  
+ |  Infinity
+ |      A double floating point number used to represent infinity.  The negative of this number represents negative infinity.  Like Netica-C GetInfinityDbl_ns.
+ |  
+ |  LogTraceToMessagesWindow
+ |      Set to -1 to have Netica log all COM activity to the Messages window, and to 0 to turn it off.  No corresponding Netica-C function.
+ |  
+ |  MemoryUsageLimit
+ |      The maximum amount of memory Netica is allowed to use for all tables and lists (in bytes).  Like Netica-C LimitMemoryUsage_ns.
+ |  
+ |  MissingDataChar
+ |      Deprecated.  Use CaseFileMissingDataSymbol instead.
+ |  
+ |  UndefDbl
+ |      A double floating point number used to represent unknown or nonexistant numeric values.  Like Netica-C GetUndefDbl_ns.
+ |  
+ |  UserAllowed
+ |      Whether the user is allowed to interact with Netica.  Like Netica-C UserAllowed_ns.
+ |  
+ |  UserControl
+ |      'True' if a human user interacted directly (or started) this Netica Application, and 'False' if it was only controlled by program(s) (e.g. Automation clients).  No corresponding Netica-C function.
+ |  
+ |  Version
+ |      Version number of Netica (multiplied by 100, so version 3.24 would return 324).  Like Netica-C GetNeticaVersion_bn.
+ |  
+ |  VersionString
+ |      A string consisting of the full version number, a space, the platform code, a comma, the name of the program, and finally the features enabled (in parenthesis).  Like Netica-C GetNeticaVersion_bn.
+ |  
+ |  Visible
+ |      Whether Netica is "minimized" (to just a task bar icon), or is visible to the user.  Done by Netica-C G/SetAppWindowPosition_ns.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data and other attributes inherited from comtypes.gen._03941920_0CF3_11D3_B0EF_84606D20AE81_0_1_0.IApplication:
+ |  
+ |  __map_case__ = {'_get_argumentchecking': '_get_ArgumentChecking', '_ge...
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from POINTER(IDispatch):
+ |  
+ |  __ctypes_from_outparam__ = wrap_outparam(punk)
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from comtypes.automation.IDispatch:
+ |  
+ |  GetIDsOfNames(self, *names, **kw)
+ |      Map string names to integer ids.
+ |  
+ |  GetTypeInfo(self, index, lcid=0)
+ |      Return type information.  Index 0 specifies typeinfo for IDispatch
+ |  
+ |  GetTypeInfoCount(...)
+ |  
+ |  Invoke(self, dispid, *args, **kw)
+ |      Invoke a method or property.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from IUnknown:
+ |  
+ |  AddRef(self)
+ |      Increase the internal refcount by one and return it.
+ |  
+ |  QueryInterface(self, interface, iid=None)
+ |      QueryInterface(interface) -> instance
+ |  
+ |  Release(self)
+ |      Decrease the internal refcount by one and return it.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data descriptors inherited from IUnknown:
+ |  
+ |  __dict__
+ |      dictionary for instance variables (if defined)
+ |  
+ |  __weakref__
+ |      list of weak references to the object (if defined)
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data and other attributes inherited from IUnknown:
+ |  
+ |  __metaclass__ = <class 'comtypes._cominterface_meta'>
+ |      Metaclass for COM interfaces.  Automatically creates high level
+ |      methods from COMMETHOD lists.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from _compointer_base:
+ |  
+ |  __cmp__(self, other)
+ |      Compare pointers to COM interfaces.
+ |  
+ |  __del__(self, _debug=<bound method Logger.debug of <logging.Logger object>>)
+ |      Release the COM refcount we own.
+ |  
+ |  __eq__(self, other)
+ |  
+ |  __hash__(self)
+ |      Return the hash value of the pointer.
+ |  
+ |  __repr__(self)
+ |  
+ |  ----------------------------------------------------------------------
+ |  Class methods inherited from _compointer_base:
+ |  
+ |  from_param(klass, value) from comtypes._compointer_meta
+ |      Convert 'value' into a COM pointer to the interface.
+ |      
+ |      This method accepts a COM pointer, or a CoClass instance
+ |      which is QueryInterface()d.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data descriptors inherited from _compointer_base:
+ |  
+ |  value
+ |      Return self.
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from _ctypes._SimpleCData:
+ |  
+ |  __init__(...)
+ |      x.__init__(...) initializes x; see help(type(x)) for signature
+ |  
+ |  __nonzero__(...)
+ |      x.__nonzero__() <==> x != 0
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data and other attributes inherited from _ctypes._SimpleCData:
+ |  
+ |  __new__ = <built-in method __new__ of _ctypes.PyCSimpleType object>
+ |      T.__new__(S, ...) -> a new object with type S, a subtype of T
+ |  
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from _ctypes._CData:
+ |  
+ |  __reduce__(...)
+ |  
+ |  __setstate__(...)

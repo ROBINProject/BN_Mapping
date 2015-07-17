@@ -16,7 +16,7 @@ It is best to first get this example project working.
    and then exit, to register it as the COM server. Then build this project 
    (Build->Build Solution), and run it (Debug->Start Debugging). 
    Should report the probability of Tuberculosis as 0.0104, then 0.09241, 
-   0.3377, and finally 0.05.  If so, your Netica installation and the sample 
+   0.3377, and finally 0.050.  If so, your Netica installation and the sample 
    "win32com" python project appears to be in good order.
 
    Now you can replace the code below with your own or, to add Netica to a 
