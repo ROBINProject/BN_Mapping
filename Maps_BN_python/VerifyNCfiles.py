@@ -4,20 +4,18 @@ Created on Thu Jun 25 21:07:25 2015
 
 @author: Miguel
 """
-
 import os
-import re
 from netCDF4 import Dataset as nc
 
-# Ubicación de los datos en formato nc
-direct_ROBIN = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RobiN"
-direct_lpj = "/Datos RoBiN/México/0_Vigente/GIS/LPJ" 
-os.chdir(direct_ROBIN + direct_lpj)
-directorios = os.walk(".")
-sub_dir = next(directorios)[1][0]
-os.chdir(direct_ROBIN + "/" + sub_dir)
-archivos = os.listdir(os.curdir)
-archivos = [nombre for nombre in archivos if re.findall("\\.nc$", nombre)]
+archivos = [nombre for nombre in os.listdir(".") if ".nc" in nombre]
+
+if len(archivos) <= 0:
+    # Ubicación de los datos en formato nc
+    direct_ROBIN = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RobiN"
+    direct_lpj = u"/Datos RoBiN/México/0_Vigente/GIS/LPJ/LU_rcp2p6_gfdl-esm2m_transientCO2_p1/" 
+    os.chdir(direct_ROBIN + direct_lpj)
+    archivos = os.listdir(os.curdir)
+    archivos = [nombre for nombre in archivos if "nc" in nombre]
 
 # Revisa los archivos en el directorio indicado
 resultados = {"bueno" : [], "malo" : []}
