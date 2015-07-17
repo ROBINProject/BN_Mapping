@@ -2,49 +2,41 @@
 """
 Created on Thu Jul 16 21:46:50 2015
 
-@author: Miguel
+@author: Miguel Equihua
+Instituto de Ecología, AC
+Contact: equihuam@gmail.com
 
 "Demo" program for Netica-COM in C#
 
 Works with  Netica 5.19 or later.
 
-It is best to first get this example project working.
-Run the latest version of Netica Application (Netica.exe) as Administrator 
+It is best to first get this example project working. 
+   Run the latest version of Netica Application (Netica.exe) as Administrator 
    (e.g. by right-clicking Netica.exe and choosing "Run as Administrator"), 
    and then exit, to register it as the COM server. Then build this project 
    (Build->Build Solution), and run it (Debug->Start Debugging). 
-   If it reports the probability of Tuberculosis is 0.0104, then 0.09241, .3377, and .05 your Netica
-   installation and C# project appear to all be in good order.
+   Should report the probability of Tuberculosis as 0.0104, then 0.09241, 
+   0.3377, and finally 0.05.  If so, your Netica installation and the sample 
+   "win32com" python project appears to be in good order.
 
-Now you can replace the code below with your own.
-Or, to add Netica to a different project:
-   From that project, choose Project->Add Reference, then the "COM" tab,
-   then double-click "Netica 5.19 Object Library" (or similar).
+   Now you can replace the code below with your own or, to add Netica to a 
+   different project, just make sure you include the call to
+       from win32com.client import Dispatch
 
-For documentation on Netica's objects and functions:
-   Add Netica to your project, as described above.
-   Choose View->Object Browser  (or View->Other Windows->Object Browser)  or  click on the Views 
-      multi-purpose tool button down-arrow and choose "Object Browser".
-   In the left pane of the Object Browser, one of the top level entries will be "Interop.Netica".  
-      You can browse that, but it won't be as good as browsing the Netica library directly, 
-      because it won't have a description of each function, and it may not even list the functions at all.
-      If there is no entry at the top level for the library named simply "Netica" (with the books icon), 
-      choose "Edit Custom Component Set..." from the "Browse" menu on the toolbar of the Object Browser. 
-      Choose the COM tab, select the Netica library from  the list, click "Add" or "Select" and then "OK".  
-      Now the books icon for the Netica library should appear, and you can browse it.
-   Choose a Netica object in the left pane, then click on a member function or property in the top
-      right pane to view its short description in the bottom pane.
-   For more information on it, find its Netica-C equivalent name at the end of its short description, 
-      and look up the function in the Netica-C manual or online at http://www.norsys.com/onLineAPIManual/index.html .
-   If you are getting the wrong version of Netica's objects, then you need to run the correct version of 
-      Netica.exe first (by right clicking on the Netica.exe icon and choosing "Run as Administrator"), 
-      to register its COM definition.
-
+   For documentation on Netica's objects and functions:
+   Use help (<pointer to the Dispatch object>) 
+   For more information on functions find its Netica-C equivalent name in the 
+   displayed short description, and look up the function in the Netica-C 
+   manual or online at http://www.norsys.com/onLineAPIManual/index.html. If 
+   you are getting the wrong version of Netica's objects, then you need to 
+   run the correct version of Netica.exe first (by right clicking on the 
+   Netica.exe icon and choosing "Run as Administrator"), to register its 
+   COM definition.
 """
 from win32com.client import Dispatch
 
-
 print "Welcome to Netica API for COM with Python!"
+
 # Vincula la interface COM de NETICA y activa la aplicación
 nt = Dispatch("Netica.Application")
 
@@ -54,7 +46,6 @@ licencia = open(lic_arch, "rb").read()
 nt.SetPassword(licencia)
 nt.SetWindowPosition(status="Hidden") # Regular, Minimized, Maximized, Hidden
 # nt.SetWindowPosition(top=10, left=10, width=1000, height=700)
-
 
 # Muestra la versión de la aplicación
 print "Using Netica version " + nt.VersionString
@@ -94,14 +85,3 @@ print "Given abnormal X-Ray, Asia visit, and lung cancer, the probability of TB 
 net.Delete()
 
 algo = raw_input (r"Press <enter> to quit.")
-
-
-
-
-
-
-
-
-
-
-
