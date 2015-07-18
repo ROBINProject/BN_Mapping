@@ -51,12 +51,15 @@ nt.SetWindowPosition(status="Hidden") # Regular, Minimized, Maximized, Hidden
 print "Using Netica version " + nt.VersionString
 
 # Hace visible a NETICA
-nt.Visible = True
+# nt.Visible = True
 
 # Localiza la red de ejemplo y la abre
 net_file_name = u"C:/Program Files/Netica/Netica 519/Programming Examples/Netica Demo for C# VS12/ChestClinic.dne"
 streamer = nt.NewStream(net_file_name)
-net = nt.ReadBNet(streamer, "")
+
+# ReadBNet 'options' can be one of "NoVisualInfo", "NoWindow", 
+# or the empty string (means create a regular window)
+net = nt.ReadBNet(streamer, "") 
 net.compile()
 
 # Lee los valores de creencia que tienen los nodos bajo distintas condiciones
