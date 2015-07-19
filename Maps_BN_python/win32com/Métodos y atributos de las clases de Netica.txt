@@ -1,0 +1,265 @@
+Methods IApplication NETICA
+string ControlConcurrency(string command, string value) Member of Netica.IApplication
+string ExecuteScript(string language, string options, string script) Member of Netica.IApplication
+Netica.Streamer FileNamed(string FileName) Member of Netica.IApplication
+Netica.BNet GetBNet(int nth) Member of Netica.IApplication
+string GetWindowPosition(out int left, out int top, out int width, out int height) Member of Netica.IApplication
+Netica.Learner NewLearner(Netica.LearningMethod method) Member of Netica.IApplication
+Netica.Streamer NewMemoryStream(string Name, [string access = ""]) Member of Netica.IApplication
+Netica.Streamer NewStream(string file_name, [string access = ""]) Member of Netica.IApplication
+void PrintToMessagesWindow(string mesg, [string options = ""]) Member of Netica.IApplication
+void Quit() Member of Netica.IApplication
+Netica.BNet ReadBNet(Netica.Streamer file, [string options = ""]) Member of Netica.IApplication
+void SetPassword(string password, [string options = ""]) Member of Netica.IApplication
+void SetWindowPosition([int left = -1], [int top = -1], [int width = -1], [int height = -1], [string status = ""]) Member of Netica.IApplication
+int TestFaultRecovery(int test_num) Member of Netica.IApplication
+
+Properties IApplication NETICA
+Netica.CheckingLevel ArgumentChecking { set; get; } Member of Netica.IApplication
+string CaseFileDelimChar { set; get; } Member of Netica.IApplication
+string CaseFileDelimiter { set; get; } Member of Netica.IApplication
+string CaseFileMissingDataSymbol { set; get; } Member of Netica.IApplication
+double Infinity { get; } Member of Netica.IApplication
+int LogTraceToMessagesWindow { set; get; } Member of Netica.IApplication
+double MemoryUsageLimit { set; get; } Member of Netica.IApplication
+string MissingDataChar { set; get; } Member of Netica.IApplication
+double UndefDbl { get; } Member of Netica.IApplication
+bool UserAllowed { set; get; } Member of Netica.IApplication
+bool UserControl { get; } Member of Netica.IApplication
+int Version { get; } Member of Netica.IApplication
+string VersionString { get; } Member of Netica.IApplication
+bool Visible { set; get; } Member of Netica.IApplication
+-----------------------------------------------------------------------------------
+
+Methods IBNet
+void Absorb(Netica.BNodes Nodes) Member of Netica.IBNet
+void AbsorbNodes(Netica.BNodes Nodes) Member of Netica.IBNet
+void AddNodesFromDatabase(Netica.DatabaseManager db, string column_names, string tables, string Condition, [string options = ""]) Member of Netica.IBNet
+Netica.BNet Clone(string new_name, [string options = ""], [object env = 0]) Member of Netica.IBNet
+void Compile() Member of Netica.IBNet
+string ControlCaching(string command, string value, Netica.BNodes Nodes) Member of Netica.IBNet
+Netica.BNodes CopyNodes(Netica.BNodes Nodes, [string options = ""]) Member of Netica.IBNet
+string CreateCustomReport(Netica.BNodes sel_nodes, string templat, string options) Member of Netica.IBNet
+void Delete() Member of Netica.IBNet
+Netica.BNet ExpandTimeSeries(int dimension, double result_time, double burn_time, [string options = ""]) Member of Netica.IBNet
+double FindingsProbability() Member of Netica.IBNet
+int GenerateRandomCase(Netica.BNodes Nodes, [int method = 0], [double param = 0]) Member of Netica.IBNet
+Netica.BNodes get_Nodes([string options = ""]) Member of Netica.IBNet
+int get_NodesetColor(string nodeset_name) Member of Netica.IBNet
+string get_UserField(string field_name) Member of Netica.IBNet
+string get_UserFieldNth(int nth, out string field_name) Member of Netica.IBNet
+string GetAllNodesets(bool include_builtin) Member of Netica.IBNet
+double GetExpectedUtility() Member of Netica.IBNet
+double GetFindingsProbability() Member of Netica.IBNet
+double GetJointProbability(Netica.BNodes Nodes, object node_states) Member of Netica.IBNet
+void GetMostProbableCondition(Netica.Condition cond, [int nth = 0]) Member of Netica.IBNet
+Netica.BNode GetNodeAtTime(string Name, object time) Member of Netica.IBNet
+void GetRelatedNodes(Netica.BNodes related_nodes, string relation, Netica.BNodes Nodes) Member of Netica.IBNet
+double GetSizeCompiled([int method = 0]) Member of Netica.IBNet
+double JointProbability(Netica.BNodes Nodes, object node_states) Member of Netica.IBNet
+Netica.Condition NewCondition(Netica.BNodes Nodes, bool load) Member of Netica.IBNet
+Netica.NetTester NewNetTester(Netica.BNodes test_nodes, Netica.BNodes unobsv_nodes, int tests) Member of Netica.IBNet
+Netica.BNode NewNode(string Name, int num_states, string style) Member of Netica.IBNet
+Netica.BNodes NewNodeList(object Nodes) Member of Netica.IBNet
+Netica.BNode Node(object index) Member of Netica.IBNet
+void ReadFindings(ref int case_posn, Netica.Streamer stream, bool add_to_existing, [Netica.BNodes Nodes = null], out int IDnum, out double freq) Member of Netica.IBNet
+int RedoOperation([long to_when = -1]) Member of Netica.IBNet
+void ReorderNodesets(string nodeset_names) Member of Netica.IBNet
+string ReportJunctionTree() Member of Netica.IBNet
+void RetractFindings() Member of Netica.IBNet
+void ReviseCPTsByCaseFile(Netica.Streamer file, Netica.BNodes Nodes, [int updating = 0], [double degree = 1]) Member of Netica.IBNet
+void ReviseCPTsByFindings(Netica.BNodes Nodes, [int updating = 0], [double degree = 1]) Member of Netica.IBNet
+void SaveAs(string file_name) Member of Netica.IBNet
+void set_NodesetColor(string nodeset_name, int color) Member of Netica.IBNet
+void set_UserField(string field_name, string data) Member of Netica.IBNet
+void SetNumUndosKept(int count_limit, int memory_limit, [string options = ""]) Member of Netica.IBNet
+void Uncompile() Member of Netica.IBNet
+int UndoLastOperation([long to_when = -1]) Member of Netica.IBNet
+void Write(Netica.Streamer file) Member of Netica.IBNet
+void WriteFindings(Netica.Streamer stream, Netica.BNodes Nodes, [int IDnum = -1], [double freq = -1]) Member of Netica.IBNet
+
+Properties IBNet
+Netica.Application Application { get; }  Member of Netica.IBNet
+int AutoUpdate { set; get; }  Member of Netica.IBNet
+string Comment { set; get; } Member of Netica.IBNet
+Netica.BNodes EliminationOrder { set; get; } Member of Netica.IBNet
+Netica.BNodes ElimOrder { set; get; } Member of Netica.IBNet
+string FileName { get; } Member of Netica.IBNet
+string Name { set; get; } Member of Netica.IBNet
+Netica.BNodes SelectedNodes { set; get; } Member of Netica.IBNet
+string Title { set; get; } Member of Netica.IBNet
+
+-----------------------------------------------------------------------------------
+Methods IBNodes
+void Add(object Node, [int index = -1]) Member of Netica.IBNodes
+void Clear() Member of Netica.IBNodes
+void Delete() Member of Netica.IBNodes
+Netica.BNodes DuplicateNodes(Netica.BNet Net) Member of Netica.IBNodes
+Netica.BNode get_Item(object index) Member of Netica.IBNodes
+System.Collections.IEnumerator GetEnumerator() Member of Netica.IBNodes
+int IndexOf(object Node, [int start_index = 0]) Member of Netica.IBNodes
+Netica.BNode Remove(object index) Member of Netica.IBNodes
+void set_Item(object index, object nth) Member of Netica.IBNodes
+
+Properties IBNodes
+int Count { get; } Member of Netica.IBNodes
+Netica.BNet Net { get; } Member of Netica.IBNodes
+
+-----------------------------------------------------------------------------------
+
+Methods IBNode
+int AddLink(object new_parent) Member of Netica.IBNode
+void AddStates(object state, string state_names, int num_states, [double cpt_fill = -1]) Member of Netica.IBNode
+int CalcState() Member of Netica.IBNode
+double CalcValue() Member of Netica.IBNode
+void Delete() Member of Netica.IBNode
+void DeleteLink(object parent) Member of Netica.IBNode
+void DeleteTables() Member of Netica.IBNode
+void EnterAction(object state) Member of Netica.IBNode
+void EnterActionRandomized(object vector) Member of Netica.IBNode
+void EnterActionValue(double value) Member of Netica.IBNode
+void EnterCalibration(object vector) Member of Netica.IBNode
+void EnterFinding(object state) Member of Netica.IBNode
+void EnterFindingNot(object state) Member of Netica.IBNode
+void EnterGaussianFinding(double mean, double std_dev) Member of Netica.IBNode
+void EnterIntervalFinding(double low, double high) Member of Netica.IBNode
+void EnterLikelihood(object vector) Member of Netica.IBNode
+void EnterValue(double value) Member of Netica.IBNode
+void EquationToTable(int num_samples, bool samp_unc, bool add_exist) Member of Netica.IBNode
+void FadeCPTable(double degree) Member of Netica.IBNode
+object get_CPTable(object parent_states) Member of Netica.IBNode
+double get_ExperTable(object parent_states) Member of Netica.IBNode
+bool get_InNodeset(string nodeset_name) Member of Netica.IBNode
+string get_InputName(int input) Member of Netica.IBNode
+string get_Label([string options = ""]) Member of Netica.IBNode
+double get_level(object state) Member of Netica.IBNode
+double get_RealFuncTable(object parent_states) Member of Netica.IBNode
+string get_StateComment(object state) Member of Netica.IBNode
+int get_StateFuncTable(object parent_states) Member of Netica.IBNode
+string get_StateLabel(object state, [string options = ""]) Member of Netica.IBNode
+double get_StateLevel(object state) Member of Netica.IBNode
+string get_StateName(int state) Member of Netica.IBNode
+string get_StateTitle(object state) Member of Netica.IBNode
+string get_UserField(string field_name) Member of Netica.IBNode
+string get_UserFieldNth(int nth, out string field_name) Member of Netica.IBNode
+object get_VisualPosition([string vname = "V1"]) Member of Netica.IBNode
+string get_VisualStyle([string vname = "V1"]) Member of Netica.IBNode
+double GetBelief(object state) Member of Netica.IBNode
+double GetExpectedUtility(object state) Member of Netica.IBNode
+double GetExpectedUtils(object state) Member of Netica.IBNode
+double GetExpectedValue(out double std_dev) Member of Netica.IBNode
+int GetFinding() Member of Netica.IBNode
+int GetFindingEntered() Member of Netica.IBNode
+int GetInputIndex(object parent) Member of Netica.IBNode
+double GetLikelihood(object state) Member of Netica.IBNode
+double GetLikelihoodEntered(object state) Member of Netica.IBNode
+void GetRelatedNodes(string relation, Netica.BNodes related_nodes) Member of Netica.IBNode
+int GetStateIndex(string state_name) Member of Netica.IBNode
+double GetValueEntered() Member of Netica.IBNode
+bool HasTable(out bool complete) Member of Netica.IBNode
+bool IsBeliefUpdated() Member of Netica.IBNode
+bool IsDeterministic() Member of Netica.IBNode
+bool IsNodeRelated(string relation, object Node) Member of Netica.IBNode
+Netica.Sensitivity NewSensitivity(Netica.BNodes findings_nodes, Netica.SensitivityMeasure what_calc) Member of Netica.IBNode
+void RemoveState(object state) Member of Netica.IBNode
+void ReorderStates(object new_order) Member of Netica.IBNode
+void RetractFindings() Member of Netica.IBNode
+void ReverseLink(object parent) Member of Netica.IBNode
+void set_CPTable(object parent_states, object vector) Member of Netica.IBNode
+void set_ExperTable(object parent_states, double exper) Member of Netica.IBNode
+void set_InNodeset(string nodeset_name, bool is_member) Member of Netica.IBNode
+void set_InputDelay(int link_index, int dimension, string value) Member of Netica.IBNode
+void set_InputName(int input, string Name) Member of Netica.IBNode
+void set_level(object state, double level) Member of Netica.IBNode
+void set_Persistance(int dimension, string value) Member of Netica.IBNode
+void set_RealFuncTable(object parent_states, double value) Member of Netica.IBNode
+void set_StateComment(object state, string Comment) Member of Netica.IBNode
+void set_StateFuncTable(object parent_states, object state) Member of Netica.IBNode
+void set_StateLevel(object state, double level) Member of Netica.IBNode
+void set_StateName(int state, string Name) Member of Netica.IBNode
+void set_StateTitle(object state, string Title) Member of Netica.IBNode
+void set_UserField(string field_name, string data) Member of Netica.IBNode
+void set_VisualPosition([string vname = "V1"], object point) Member of Netica.IBNode
+void set_VisualStyle([string vname = "V1"], string style) Member of Netica.IBNode
+void SwitchParent(object parent, object new_parent) Member of Netica.IBNode
+
+Properties IBNodes
+Netica.BNodes Children { get; } Member of Netica.IBNode
+string Comment { set; get; } Member of Netica.IBNode
+string Equation { set; get; } Member of Netica.IBNode
+bool IsSelected { set; get; } Member of Netica.IBNode
+Netica.NodeKind Kind { set; get; } Member of Netica.IBNode
+string Name { set; get; } Member of Netica.IBNode
+Netica.BNet Net { get; } Member of Netica.IBNode
+int NumberStates { get; } Member of Netica.IBNode
+Netica.BNodes Parents { get; } Member of Netica.IBNode
+string StateNames { set; get; } Member of Netica.IBNode
+string Title { set; get; } Member of Netica.IBNode
+Netica.NodeType Type { get; } Member of Netica.IBNode
+
+-----------------------------------------------------------------------------------
+
+Methods ICaseset
+void AddCasesFromDatabase(Netica.DatabaseManager db, double degree, Netica.BNodes Nodes, [string column_names = ""], [string tables = ""], [string Condition = ""], [string options = ""]) Member of Netica.ICaseset
+void AddCasesFromFile(Netica.Streamer file, [double degree = 1], [string options = ""]) Member of Netica.ICaseset
+void Delete() Member of Netica.ICaseset
+void WriteCases(Netica.Streamer file, [string options = ""]) Member of Netica.ICaseset
+
+-----------------------------------------------------------------------------------
+
+Methods  ILearner
+void Delete() Member of Netica.ILearner
+void LearnCPTs(Netica.BNodes Nodes, Netica.Caseset cases, double degree) Member of Netica.ILearner
+
+Properties ILearner
+int MaxIterations { set; get; } Member of Netica.ILearner
+double MaxTolerance { set; get; } Member of Netica.ILearner
+-----------------------------------------------------------------------------------
+
+Methods INetTester
+void Delete() Member of Netica.INetTester
+double get_ConfusionMatrix(object Node, object predicted_state, object actual_state) Member of Netica.INetTester
+double get_ErrorRate(object Node) Member of Netica.INetTester
+double get_LogLoss(object Node) Member of Netica.INetTester
+double get_QuadraticLoss(object Node) Member of Netica.INetTester
+void TestWithCases(Netica.Caseset cases) Member of Netica.INetTester
+	
+Properties INetTester
+Netica.BNet Net { get; } Member of Netica.INetTester
+
+-----------------------------------------------------------------------------------
+
+Methods IStreamer
+void Delete() Member of Netica.IStreamer
+int GetContents(object buffer) Member of Netica.IStreamer
+Netica.BNet ReadBNet([short visual = 1120]) Member of Netica.IStreamer
+void SetContents(object buffer, [int start = 0], [int length = -1]) Member of Netica.IStreamer
+
+Properties IStreamer
+string password { set; } Member of Netica.IStreamer
+
+-----------------------------------------------------------------------------------
+
+Methods ISensitivity
+void Delete() Member of Netica.ISensitivity
+double GetMutualInfo(object finding_node) Member of Netica.ISensitivity
+double GetVarianceOfReal(object finding_node) Member of Netica.ISensitivity
+double MutualInfo(object finding_node) Member of Netica.ISensitivity
+double VarianceOfReal(object finding_node) Member of Netica.ISensitivity
+
+Properties ISensitivity
+Netica.BNode Node { get; } Member of Netica.ISensitivity
+
+-----------------------------------------------------------------------------------
+
+Methods ICondition
+void Delete() Member of Netica.ICondition
+int GetState(object Node) Member of Netica.ICondition
+void MostProbable([int nth = 0]) Member of Netica.ICondition
+bool Next() Member of Netica.ICondition
+void SetState(object Node, object state) Member of Netica.ICondition
+void Zero() Member of Netica.ICondition
+
+Properties ICondition
+Netica.BNet Net { get; } Member of Netica.ICondition
+	
