@@ -2,13 +2,6 @@
 """
 Created on Sat Jul 18 13:58:13 2015
 
-@author: Miguel
-"""
-
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jul 10 19:26:09 2015
-
 Read the zvh network with nodes without links and arranges it
 by vairable type by rows
 
@@ -16,7 +9,8 @@ by vairable type by rows
 """
 import os
 import re
-import sys
+
+import argparse
 from win32com.client import Dispatch
 
 class learn_method:
@@ -24,13 +18,12 @@ class learn_method:
     EM=3
     gradient=4
 
-
 #
 #-------------------- Funciones locales --------------------------
 #
 def inicia_netica(lic_dir):
-    # Vincula la interface COM de NETICA y activa la aplicación
-    # Asume que la licencia está en el mismo directorio de la aplicación
+    # Vincula la interface COM de NETICA y activa la aplicacion
+    # Asume que la licencia esta en el mismo directorio de la aplicacion
     # si no la encuentra arranca en modo limitado
     netica_app = Dispatch("Netica.Application")
     licenseFile = os.path.join (lic_dir, "inecol_netica.txt")
@@ -142,7 +135,7 @@ def copia_variables_interes(nodos_dic):
     for n, v in nodos_dic["tm"].iteritems():
         v.IsSelected = True
     nodos_interes = net_p.SelectedNodes
-    # Crea una nueva red con los nodos de interés y los arregla
+    # Crea una nueva red con los nodos de interes y los arregla
     nt_nueva = netica_app.NewBNet("nueva_red") 
     nt_nueva.CopyNodes(nodos_interes)
     nodosNuevosList_p = nt_nueva.Nodes
@@ -156,7 +149,7 @@ def copia_variables_interes(nodos_dic):
     return nt_nueva, nodosNuevosList_p
 
 def prueba_RB_naive ():
-    # Crea todos los links tipo "Naive" del "nodo_objetivo" hacia los demás
+    # Crea todos los links tipo "Naive" del "nodo_objetivo" hacia los demas
     for pp in ["ppt%02d" % (i,) for i in range(1, 13) ]:
         nodosNuevosList_p[pp].AddLink(nodosNuevosList_p[nodo_objetivo])
         nodosNuevosList_p[pp].AddLink(nodosNuevosList_p["dem30_mean1000"])
@@ -172,66 +165,188 @@ def prueba_RB_naive ():
     # Entrena y prueba la nueva red
     entrena_BNet (nodosNuevosList_p, casos_st, 1)
     tasaError = prueba_BNet(nodo_objetivo, casos_st)
-    return tasaError
+    print "Tasa de error modelo \"Naive\" completo: {:10.4f}".format(tasaError)
+    #
+    # Anota avance del calculo en la seccion de "descripcion" de la red
+    resultados = ["#" * 80]
+    if len(coment_red_origen) > 0:
+        resultados.append (coment_red_origen + "\n" + "#" * 80)
+    resultados.append ("".join(["Netica ", netica_app.VersionString, 
+                       ". Iniciada con: ", "ROBIN_netica_zvh_training.py"]))
+    resultados.append ("".join(["#" * 80, "\n"]))
+    resultados.append ("".join(["Licencia buscada en: ", netica_dir]))
+    resultados.append ("".join(["Nodo de interes seleccionado: ", nodo_objetivo]))
+    resultados.append ("".join(["Nueva red guardada en: ", nueva_red_nombre]))
+    resultados.append ("Tasa de error modelo \"Naive\" completo: {:10.4f}".format(tasaError))
+    nt_nueva.Comment = "\n".join(resultados)
 
-def descripcion_nueva_red (red_nva, err):
-    resultados = [u"Netica " + netica_app.VersionString + 
-                  u"iniciada con: " + "ROBIN_netica_zvh_training.py"]
-    resultados.append(u"Localización licencia: " + netica_dir)
-    resultados.append(u"Nodo de interés seleccionado: " + nodo_objetivo)
-    resultados.append("Nueva red guardada en: " + nueva_red_nombre)
-    resultados.append(u"Tasa de error modelo \"Naive\""
-                      u" completo: {:10.4f}\n".format(err_naive))
-    for e in sorted(err):
-        resultados.append("Tasa de error con la variable " + e +
-                           ": {:10.4f}".format(errores[e]))
-    resultados.append("\nprocesamiento terminado ***************")
-    resultados.append("Cerrando NETICA!")
-    red_nva.Comment = u"\n".join(resultados)
+def pruebas_de_1 (nd_obj, nodos_p, vars_lst):
+    # Prueba la red "un-nodo-a-la-vez" tomado de la lista de variables
+    nt_nueva.Comment = "".join([nt_nueva.Comment, "\n" * 2, "-" * 80])
+    errores = {}
+    for nodo in sorted(vars_lst):
+        red_nula(nodo_objetivo, variables_lst)    
+        nodos_p[nodo].AddLink(nodos_p[nd_obj])
+        nodos_p[nodo].AddLink(nodos_p["dem30_mean1000"])
+        nodos_p[nodo].AddLink(nodos_p["dem30_sd1000"])
+        entrena_BNet (nodos_p, casos_st, 1)
+        tasaError = prueba_BNet(nd_obj, casos_st)
+        errores[nodo] = tasaError
+        print "".join(["Tasa de error <", nodo, "> : ""{:10.4f}".format(tasaError)])
+        nt_nueva.Comment = "".join([nt_nueva.Comment, "\nTasa de error <",
+                                    nodo, "> : ""{:10.4f}".format(tasaError)])
+    nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80, "\n"])
+    red_nula (nd_obj, vars_lst)    
+
+def pruebas_de_2 (nd_obj, nodos_p, vars_lst):
+    # Prueba de la red con pares de variables
+    nt_nueva.Comment = "".join([nt_nueva.Comment, 
+                                "\n\nBloque de pruebas en bloques de 2"])
+    nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80])
+    errores2 = {} 
+    for nodo in sorted(vars_lst)[0:-1]:
+        red_nula(nd_obj, vars_lst)    
+        nodos_p[nodo].AddLink(nodos_p[nd_obj])
+        nodos_p[nodo].AddLink(nodos_p["dem30_mean1000"])
+        nodos_p[nodo].AddLink(nodos_p["dem30_sd1000"])
+        i = vars_lst.index(nodo) + 1
+        nt_nueva.Comment = "".join([nt_nueva.Comment, "\n"])
+        for odon in sorted(vars_lst)[i:]:
+            nodos_p[odon].AddLink(nodos_p[nd_obj])
+            nodos_p[odon].AddLink(nodos_p["dem30_mean1000"])
+            nodos_p[odon].AddLink(nodos_p["dem30_sd1000"])
+            entrena_BNet (nodos_p, casos_st, 1)
+            tasaError = prueba_BNet(nd_obj, casos_st)
+            errores2[nodo + "_" + odon] = tasaError
+            print "".join(["Tasa de error <", nodo, "_", odon, 
+                           "> : ""{:10.4f}".format(tasaError)])
+            nt_nueva.Comment = "".join([nt_nueva.Comment, "Tasa de error <",
+                                        nodo, "_", odon, 
+                                        "> : ""{:10.4f}\n".format(tasaError)]) 
+            red_nula (nd_obj, vars_lst)    
+            nodos_p[nodo].AddLink(nodos_p[nd_obj])
+            nodos_p[nodo].AddLink(nodos_p["dem30_mean1000"])
+            nodos_p[nodo].AddLink(nodos_p["dem30_sd1000"])
+    nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80 + "\n"])
+    red_nula (nd_obj, vars_lst)    
+
+def pruebas_de_3 (nd_obj, nodos_p, vars_lst):
+    # Prueba de la red con pares de variables
+    nt_nueva.Comment = "".join([nt_nueva.Comment, 
+                                "\n\nBloque de pruebas en bloques de 2"])
+    nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80])
+    errores2 = {} 
+    for uno in sorted(vars_lst)[0:-2]:
+        red_nula(nd_obj, vars_lst)    
+        nodos_p[uno].AddLink(nodos_p[nd_obj])
+        nodos_p[uno].AddLink(nodos_p["dem30_mean1000"])
+        nodos_p[uno].AddLink(nodos_p["dem30_sd1000"])
+        i = vars_lst.index(uno) + 1
+        nt_nueva.Comment = "".join([nt_nueva.Comment, "\n"])
+        for dos in sorted(vars_lst)[i:]:
+            nodos_p[dos].AddLink(nodos_p[nd_obj])
+            nodos_p[dos].AddLink(nodos_p["dem30_mean1000"])
+            nodos_p[dos].AddLink(nodos_p["dem30_sd1000"])
+            j = vars_lst.index(dos) + 1
+            for tres in sorted(vars_lst)[j:-1]:
+                nodos_p[tres].AddLink(nodos_p[nd_obj])
+                nodos_p[tres].AddLink(nodos_p["dem30_mean1000"])
+                nodos_p[tres].AddLink(nodos_p["dem30_sd1000"])
+                entrena_BNet (nodos_p, casos_st, 1)
+                tasaError = prueba_BNet(nd_obj, casos_st)
+                errores2 ["".join([uno, "_", dos, "_", tres])] = tasaError
+                print "".join(["Tasa de error <", uno, "_", dos, "_", tres, 
+                               "> : {:10.4f}".format(tasaError)])
+                nt_nueva.Comment = "".join([nt_nueva.Comment, "Tasa de error <", 
+                          uno, "_", dos, "_", tres, 
+                          "> : ""{:10.4f}\n".format(tasaError)])
+                red_nula (nd_obj, vars_lst)    
+                nodos_p[uno].AddLink(nodos_p[nd_obj])
+                nodos_p[uno].AddLink(nodos_p["dem30_mean1000"])
+                nodos_p[uno].AddLink(nodos_p["dem30_sd1000"])
+                nodos_p[dos].AddLink(nodos_p[nd_obj])
+                nodos_p[dos].AddLink(nodos_p["dem30_mean1000"])
+                nodos_p[dos].AddLink(nodos_p["dem30_sd1000"])
+    nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80, "\n"])
+    red_nula (nd_obj, vars_lst)    
+
+def descripcion_nueva_red (red_nva, err_nv, err1, err2):
+    resultados = red_nva.Comment
+    resultados.append ("\n" + "-" * 80)
+    resultados.append ("Modelos una variable a la vez")
+    for e in sorted(err1):
+        resultados.append("".join(["Tasa de error con la variable ", e,
+                           ": {:10.4f}".format(err1[e])]))
+    resultados.append ("".join(["-" * 80, "\n"*2]))
+    resultados.append ("".join(["\n", "-" * 80]))
+    resultados.append ("Modelos con dos variable")
+    for e in sorted(err2):
+        resultados.append("".join(["Tasa de error con la variable ", e,
+                           ": {:10.4f}".format(err2[e])]))
+    resultados.append ("".join(["-" * 80, "\n"*2]))
+    resultados.append ("procesamiento terminado ***************")
+    resultados.append ("Cerrando NETICA!")
+    red_nva.Comment = "\n".join(resultados)
 #-----------------------------------------------------------------
 
+# Variables para definir los parametros de operacion
+#usage = "uso: %prog --target --pruebas --base_Network"
+#parser = OptionParser(usage=usage, version="%prog version 0.1")
+#choices=['rock', 'paper', 'scissors']
+parser = argparse.ArgumentParser()
+parser.add_argument("-t", "--target", metavar="1/2/3", type = int, 
+                  dest = "target", default = 1, 
+                  help="Digito para elegir variable objetivo: 1=Zvh_8ph, 2=zvh, 3=zvh_31")
+parser.add_argument("-p", "--pruebas", metavar="alguna(s) 0,1,2,3",  
+                  dest = "pruebas", default = "3", 
+                  help="Que pruebas hacer, cualquier combinacion de 0 (naive), 1, 2, 3")
+parser.add_argument("-b", "--base", metavar="File_NETA", 
+                  dest="base", default="variables.neta",
+                  help="Lee los nodos desde la red fuente: redB.dne") 
 
-# Check if there is a file name in the command line
-try:
-    netica_dir = sys.argv[0]
-    net_dsk = sys.argv[1]
-except IndexError:
-    net_dsk=""
-    netica_dir = "C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/BN_Mapping/Netica/"
-    print u"No file was given, will search for \"variables.neta\""
-
-# Variables para definir los parámetros de operación
-nodo_objetivo = "zvh" # Zvh_8ph, 
-nueva_red_nombre = "T02_test.neta"
+# Recupera informacion de la linea de comandos y establece los parametros
+args = parser.parse_args()
+objetivo_seleccionado = args.target - 1
+net_dsk = args.base
+pruebas = set(map(int, args.pruebas.split(",")))
+netica_dir = "C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/BN_Mapping/Netica/"
+nodos_obj = {"Zvh_8ph":"T01_test.neta", "zvh":"T02_test.neta", "zvh_31":"T03_test.neta"}
+nodo_objetivo = nodos_obj.keys()[objetivo_seleccionado]
+nueva_red_nombre = nodos_obj.values()[objetivo_seleccionado]
 primerPlano = 1
 controlUsuario = False
 
 # Initialize NETICA environment
 netica_app = inicia_netica(netica_dir)
-netica_app.SetWindowPosition(status="Hidden")
+netica_app.SetWindowPosition(status="Regular") # Hidden, Regular
 # netica_app.visible = primerPlano
 # netica_app.UserControl = controlUsuario ----- no se puede cambiar
+opciones_str = "".join([str(args.target), " ", args.pruebas, " ", args.base])
+print "".join(["\n"*2, "#" * 40, "\nAbriendo Netica\n", "#" * 40]) 
+print "".join(["Parametros: ", opciones_str])
+print "".join(["Netica iniciada: ", netica_app.VersionString])
+print "".join(["Se busco licencia en: ", netica_dir])
 
-print "\n"*2 + "#" * 40 + "\nAbriendo Netica\n" + "#" * 40 
-print "Netica iniciada: " + netica_app.VersionString + ""
-print "Localización licencia: " + netica_dir
+dir_robin = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN"
+dir_datos = u"/Datos RoBiN/México/0_Vigente/GIS/Mapas_base/2004/train_data_pack/"
 if net_dsk.rfind(".neta") < 0:
-    dir_robin = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN"
-    dir_datos = u"/Datos RoBiN/México/0_Vigente/GIS/Mapas_base/2004/train_data_pack/"
     net_dsk = dir_robin + dir_datos +"variables.neta"
-
+else:
+    net_dsk = dir_robin + dir_datos + net_dsk
 # Open selected Network file
 name = netica_app.NewStream(net_dsk)
 net_p = netica_app.ReadBNet(name, "")
-print u"Red abierta: " + net_p.Name
-print u"Archivo seleccionado: " + net_p.FileName.split("/")[-1]
-print u"Descripción de la red: " + net_p.Comment + u" Todas las variables de ROBIN-Mex"
+print "".join(["Red abierta: ", net_p.Name])
+print "".join(["Archivo seleccionado: ", net_p.FileName.split("/")[-1]])
+print "".join(["Descripcion de la red: ", net_p.Comment, 
+                " Todas las variables de ROBIN-Mex"])
 
 # Anota en un diccionario los datos de los nodos contenidos en "variables.neta"
 nodos_dic = lista_nodos_diccionario(net_p)
 
-# Selecciona nodos de interés y los copia en una nueva red.
-print u"Nodo de interés seleccionado: " + nodo_objetivo
+# Selecciona nodos de interes y los copia en una nueva red.
+print "".join(["Nodo de interes seleccionado: ", nodo_objetivo])
+coment_red_origen = net_p.Comment
 nt_nueva, nodosNuevosList_p = copia_variables_interes(nodos_dic)
 
 # Cierra la red de todas las variables.
@@ -240,37 +355,37 @@ net_p.Delete()
 # Prepara casos para entrenamiento y pruebas
 casos_st = prepara_casos ("bn_train_20150713_sin_NA.csv")
 
-# Prueba la red con todos los enlaces tipo "naive" 
-err_naive = prueba_RB_naive ()
-print u"Tasa de error modelo \"Naive\" completo: {:10.4f}".format(err_naive)
-
-# Prueba la red un nodo a la vez tomado de esta lista
+# Lista usada para organizar el proceso iterativo de prueba
 variables_lst = ["ppt%02d" % (i,) for i in range(1, 13)]
 variables_lst.extend(["tmax%02d" % (i,) for i in range(1, 13)])
 variables_lst.extend(["tmin%02d" % (i,) for i in range(1, 13)])
 
-errores = {}
-for nodo in sorted(variables_lst):
-    red_nula(nodo_objetivo, variables_lst)    
-    nodosNuevosList_p[nodo].AddLink(nodosNuevosList_p[nodo_objetivo])
-    nodosNuevosList_p[nodo].AddLink(nodosNuevosList_p["dem30_mean1000"])
-    nodosNuevosList_p[nodo].AddLink(nodosNuevosList_p["dem30_sd1000"])
-    entrena_BNet (nodosNuevosList_p, casos_st, 1)
-    tasaError = prueba_BNet(nodo_objetivo, casos_st)
-    errores[nodo] = tasaError
-    print "Tasa de error <" + nodo +"> : ""{:10.4f}".format(tasaError)
-red_nula (nodo_objetivo, variables_lst)    
+if set([0]).issubset(pruebas):
+    # Prueba la red con todos los enlaces tipo "naive" 
+    prueba_RB_naive ()
 
-# Anota resultados en la hoja de descripción y guarda la nueva red
-descripcion_nueva_red (nt_nueva, errores)
+if set([1]).issubset(pruebas):
+    pruebas_de_1 (nodo_objetivo, nodosNuevosList_p, variables_lst)
 
-# Guarda la nueva y prepara pruebas
-nueva_dsk = dir_robin + dir_datos +nueva_red_nombre
+if set([2]).issubset(pruebas):
+    pruebas_de_2 (nodo_objetivo, nodosNuevosList_p, variables_lst)
+
+if set([3]).issubset(pruebas):
+    pruebas_de_3 (nodo_objetivo, nodosNuevosList_p, variables_lst)
+
+# Anota resultados en la hoja de descripcion
+# descripcion_nueva_red (nt_nueva, err_naive, errores, errores2)
+
+# Guarda la nueva
+nueva_dsk = dir_robin + dir_datos + nueva_red_nombre
 nueva_st = netica_app.NewStream(nueva_dsk)
 nt_nueva.Write(nueva_st)
-print "Nueva red guardada en: " + nueva_red_nombre   
+print "".join(["Nueva red guardada en: ", nueva_red_nombre])   
 
 print "procesamiento terminado ***************"
 print "Cerrando NETICA!"
+
+nueva_st.Delete()
+nt_nueva.Delete()
 netica_app.Quit()
     
