@@ -13,14 +13,15 @@ import re
 import argparse
 from win32com.client import Dispatch
 
+
+#
+#-------------------- Funciones y clases locales --------------------------
+#
 class learn_method:
     counting=1
     EM=3
     gradient=4
 
-#
-#-------------------- Funciones locales --------------------------
-#
 def inicia_netica(lic_dir):
     # Vincula la interface COM de NETICA y activa la aplicacion
     # Asume que la licencia esta en el mismo directorio de la aplicacion
@@ -204,7 +205,7 @@ def pruebas_de_2 (nd_obj, nodos_p, vars_lst):
                                 "\n\nBloque de pruebas en bloques de 2"])
     nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80])
     errores2 = {} 
-    for nodo in sorted(vars_lst)[0:-1]:
+    for nodo in sorted(vars_lst)[0:-1]:  #  Ajuste según avance
         red_nula(nd_obj, vars_lst)    
         nodos_p[nodo].AddLink(nodos_p[nd_obj])
         nodos_p[nodo].AddLink(nodos_p["dem30_mean1000"])
@@ -236,19 +237,20 @@ def pruebas_de_3 (nd_obj, nodos_p, vars_lst):
                                 "\n\nBloque de pruebas en bloques de 2"])
     nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80])
     errores2 = {} 
-    for uno in sorted(vars_lst)[0:-2]:
+    for uno in sorted(vars_lst)[:-2]:
         red_nula(nd_obj, vars_lst)    
         nodos_p[uno].AddLink(nodos_p[nd_obj])
         nodos_p[uno].AddLink(nodos_p["dem30_mean1000"])
         nodos_p[uno].AddLink(nodos_p["dem30_sd1000"])
         i = vars_lst.index(uno) + 1
         nt_nueva.Comment = "".join([nt_nueva.Comment, "\n"])
-        for dos in sorted(vars_lst)[i:]:
+        for dos in sorted(vars_lst)[i:-1]:
             nodos_p[dos].AddLink(nodos_p[nd_obj])
             nodos_p[dos].AddLink(nodos_p["dem30_mean1000"])
             nodos_p[dos].AddLink(nodos_p["dem30_sd1000"])
             j = vars_lst.index(dos) + 1
-            for tres in sorted(vars_lst)[j:-1]:
+            j = 35
+            for tres in sorted(vars_lst)[j:]:
                 nodos_p[tres].AddLink(nodos_p[nd_obj])
                 nodos_p[tres].AddLink(nodos_p["dem30_mean1000"])
                 nodos_p[tres].AddLink(nodos_p["dem30_sd1000"])
@@ -289,16 +291,17 @@ def descripcion_nueva_red (red_nva, err_nv, err1, err2):
     red_nva.Comment = "\n".join(resultados)
 #-----------------------------------------------------------------
 
+
 # Variables para definir los parametros de operacion
 #usage = "uso: %prog --target --pruebas --base_Network"
 #parser = OptionParser(usage=usage, version="%prog version 0.1")
 #choices=['rock', 'paper', 'scissors']
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--target", metavar="1/2/3", type = int, 
-                  dest = "target", default = 1, 
+                  dest = "target", default = 1,
                   help="Digito para elegir variable objetivo: 1=Zvh_8ph, 2=zvh, 3=zvh_31")
 parser.add_argument("-p", "--pruebas", metavar="alguna(s) 0,1,2,3",  
-                  dest = "pruebas", default = "3", 
+                  dest = "pruebas", default = "2", 
                   help="Que pruebas hacer, cualquier combinacion de 0 (naive), 1, 2, 3")
 parser.add_argument("-b", "--base", metavar="File_NETA", 
                   dest="base", default="variables.neta",
@@ -310,7 +313,7 @@ objetivo_seleccionado = args.target - 1
 net_dsk = args.base
 pruebas = set(map(int, args.pruebas.split(",")))
 netica_dir = "C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/BN_Mapping/Netica/"
-nodos_obj = {"Zvh_8ph":"T01_test.neta", "zvh":"T02_test.neta", "zvh_31":"T03_test.neta"}
+nodos_obj = {"Zvh_8ph":"A01_test.neta", "zvh":"A02_test.neta", "zvh_31":"A03_test.neta"}
 nodo_objetivo = nodos_obj.keys()[objetivo_seleccionado]
 nueva_red_nombre = nodos_obj.values()[objetivo_seleccionado]
 primerPlano = 1
@@ -388,4 +391,3 @@ print "Cerrando NETICA!"
 nueva_st.Delete()
 nt_nueva.Delete()
 netica_app.Quit()
-    
