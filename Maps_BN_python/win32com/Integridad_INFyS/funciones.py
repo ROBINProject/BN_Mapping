@@ -163,17 +163,16 @@ class Netica_RB_EcoInt:
         entrenamiento = self.netApp.NewLearner(learn_method.counting)
         entrenamiento.LearnCPTs(nodos, self.casos, degree)  # Degree usualy 1
         self.nt_nueva.compile()
-    
-    
-    def red_nula(self, var_lst):
+
+    def red_nula(self, var_set):
         # Erase tables of involved nodes in current network
         nodos_hijos = [n.name for n in
-                       self.nodosNuevosList_p[self.nodo_obj].Children]
+                       self.nodosNuevosList_p[self.nodo_zvh].Children]
         self.nodosNuevosList_p[self.nodo_obj].DeleteTables()
         self.nodosNuevosList_p[self.nodo_zvh].DeleteTables()
         self.nodosNuevosList_p["dem30_mean1000"].DeleteTables()
         self.nodosNuevosList_p["dem30_sd1000"].DeleteTables()
-        for pp in var_lst:
+        for pp in var_set:
             self.nodosNuevosList_p[pp].DeleteTables()
             if pp in nodos_hijos:
                 self.nodosNuevosList_p[pp].DeleteLink(
@@ -220,12 +219,12 @@ class Netica_RB_EcoInt:
         xlw(xl_row, 3, u"Tasa de error elección aleatoria:")
         xlw(xl_row, 4, float(errorAleat))
     
-    def pruebas_de_1(self, xl_row, vars_lst, xlw):
+    def pruebas_de_1(self, xl_row, vars_set, xlw):
         # Prueba la red "un-nodo-a-la-vez" tomado de la lista de variables
         self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n" * 2, "-" * 80])
         errores = {}
-        for nodo in sorted(vars_lst):
-            self.red_nula(vars_lst)
+        for nodo in sorted(vars_set):
+            self.red_nula(vars_set)
             self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_zvh])
             self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_obj])
             self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
@@ -237,17 +236,17 @@ class Netica_RB_EcoInt:
             xlw(xl_row, 1, "Tasa de error ")
             xlw(xl_row, 2, u"".join(["<", nodo, ">: "]))
             xlw(xl_row, 3, tasaError)
-        self.red_nula(vars_lst)
+        self.red_nula(vars_set)
     
     
-    def pruebas_de_2(self, xl_row, vars_lst, xlw):
+    def pruebas_de_2(self, xl_row, vars_set, xlw):
         # Prueba de la red con pares de variables
         self.nt_nueva.Comment = "".join([self.nt_nueva.Comment,
                                     "\n\nBloque de pruebas en bloques de 2"])
         self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n", "-" * 80])
         errores, nodo_min_err= {}, {"a":100}
-        for nodo in sorted(vars_lst):
-            self.red_nula(vars_lst)
+        for nodo in sorted(vars_set):
+            self.red_nula(vars_set)
             self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_zvh])
             self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_obj])
             self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
@@ -258,16 +257,15 @@ class Netica_RB_EcoInt:
             xl_row = xl_row + 1
             xlw(xl_row, 1,   "".join(["Tasa de error <", nodo, "> : "]))
             xlw(xl_row, 2,   tasaError)
+            xlw(xl_row, 3, "=1-(B{:0d}".format(xl_row) + " / $B$10)")
             if tasaError < nodo_min_err[nodo_min_err.keys()[0]]:
                 nodo_min_err.popitem()
                 nodo_min_err[nodo] = tasaError
             nodo_1 = nodo_min_err.keys()[0]
             self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n"])
-        self.red_nula(vars_lst)
-        v_2_lst = vars_lst
-        v_2_lst.remove(nodo_1)
         errores2 = {}
-        for odon in sorted(v_2_lst):
+        for odon in sorted(vars_set - set([nodo_1])):
+            self.red_nula(vars_set)
             self.nodosNuevosList_p[odon].AddLink(self.nodosNuevosList_p[self.nodo_zvh])
             self.nodosNuevosList_p[odon].AddLink(self.nodosNuevosList_p[self.nodo_obj])
             self.nodosNuevosList_p[odon].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
@@ -278,37 +276,42 @@ class Netica_RB_EcoInt:
             self.nodosNuevosList_p[nodo_1].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
             self.entrena_BNet(self.nodosNuevosList_p, 1)
             tasaError = self.prueba_BNet()
-            errores2[nodo + "_" + odon] = tasaError
+            errores2[nodo_1 + "_" + odon] = tasaError
+            if tasaError < nodo_min_err[nodo_min_err.keys()[0]]:
+                nodo_min_err.popitem()
+                nodo_min_err[nodo_1 + "_" + odon] = tasaError
             xl_row = xl_row + 1
-            xlw(xl_row, 1, u"".join(["Tasa de error <", nodo, "_", odon,
-                                          "> : ""{:10.4f}".format(tasaError)]))
+            xlw(xl_row, 1, u"".join(["Tasa de error <", nodo_1, "_", odon, "> :"]))
+            xlw(xl_row, 2, tasaError)
+            xlw(xl_row, 3, "=1-(B{:0d}".format(xl_row) + " / $B$10)")
             self.nt_nueva.Comment = u"".join([self.nt_nueva.Comment, "Tasa de error <",
-                                        nodo, "_", odon, "> : ""{:10.4f}\n".
+                                        nodo_1, "_", odon, "> : ""{:10.4f}\n".
                                         format(tasaError)])
-            self.red_nula(vars_lst)
         self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n", "-" * 80 + "\n"])
-        self.red_nula(vars_lst)
+        self.red_nula(vars_set)
+        return nodo_min_err
+        
     
     
-    def pruebas_de_3(self, vars_lst, xlw):
+    def pruebas_de_3(self, vars_set, xlw):
         # Prueba de la red con pares de variables
         nt_nueva.Comment = "".join([nt_nueva.Comment,
                                     "\n\nBloque de pruebas en bloques de 2"])
         nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80])
         errores2 = {}
-        for uno in sorted(vars_lst)[0:-2]:
-            red_nula(self.nodo_obj, vars_lst)
+        for uno in sorted(vars_set)[0:-2]:
+            red_nula(self.nodo_obj, vars_set)
             self.nodosNuevosList_p[uno].AddLink(self.nodosNuevosList_p[self.nodo_obj])
             self.nodosNuevosList_p[uno].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
             self.nodosNuevosList_p[uno].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
-            i = vars_lst.index(uno) + 1
+            i = vars_set.index(uno) + 1
             nt_nueva.Comment = "".join([nt_nueva.Comment, "\n"])
-            for dos in sorted(vars_lst)[i:-1]:
+            for dos in sorted(vars_set)[i:-1]:
                 self.nodosNuevosList_p[dos].AddLink(self.nodosNuevosList_p[self.nodo_obj])
                 self.nodosNuevosList_p[dos].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
                 self.nodosNuevosList_p[dos].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
-                j = vars_lst.index(dos) + 1
-                for tres in sorted(vars_lst)[j:]:
+                j = vars_set.index(dos) + 1
+                for tres in sorted(vars_set)[j:]:
                     self.nodosNuevosList_p[tres].AddLink(self.nodosNuevosList_p[self.nodo_obj])
                     self.nodosNuevosList_p[tres].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
                     self.nodosNuevosList_p[tres].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
@@ -324,7 +327,7 @@ class Netica_RB_EcoInt:
                                                 uno, "_", dos, "_", tres,
                                                 "> : ""{:10.4f}\n".
                                                 format(tasaError)])
-                    red_nula(self.nodo_obj, vars_lst)
+                    red_nula(self.nodo_obj, vars_set)
                     self.nodosNuevosList_p[uno].AddLink(self.nodosNuevosList_p[self.nodo_obj])
                     self.nodosNuevosList_p[uno].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
                     self.nodosNuevosList_p[uno].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
@@ -332,7 +335,7 @@ class Netica_RB_EcoInt:
                     self.nodosNuevosList_p[dos].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
                     self.nodosNuevosList_p[dos].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
         nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80, "\n"])
-        red_nula(self.nodo_obj, vars_lst)
+        red_nula(self.nodo_obj, vars_set)
     
     
     def descripcion_nueva_red(red_nva, err_nv, err1, err2):
