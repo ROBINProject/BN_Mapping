@@ -285,25 +285,7 @@ class Netica_RB_EcoInt:
         self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n", "-" * 80])
         errores, nodo_min_err= {}, {"a":100}
         set_in = {}
-#        for nodo in sorted(vars_set):
-#            self.red_nula(vars_set)
-#            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_zvh])
-#            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_obj])
-#            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
-#            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
-#            self.entrena_BNet(self.nodosNuevosList_p, 1)
-#            tasaError = self.prueba_BNet()
-#            errores[nodo] = tasaError
-#            xl_row = xl_row + 1
-#            xlw(xl_row, 1,   "".join(["Tasa de error <", nodo, "> : "]))
-#            xlw(xl_row, 2,   tasaError)
-#            xlw(xl_row, 3, "=($B$10 / B{:0d}".format(xl_row) + " - 1")
-#            if tasaError < nodo_min_err[nodo_min_err.keys()[0]]:
-#                nodo_min_err.popitem()
-#                nodo_min_err[nodo] = tasaError
-#            nodo_1 = nodo_min_err.keys()[0]
-#            self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n"])
-        set_test = vars_set - set([nodo_min_err.keys()[0]])
+        set_test = vars_set
         set_in = {}
         while set_test != {}:
             for odon in sorted(set_test):
@@ -330,22 +312,30 @@ class Netica_RB_EcoInt:
                 tasaError = self.prueba_BNet()
                 if tasaError < nodo_min_err[nodo_min_err.keys()[0]]:
                     nodo_min_err.popitem()
-                    nodo_min_err["Agrega: " + odon] = tasaError
-                xl_row = xl_row + 1
-                xlw(xl_row, 1, u"".join([
-                    "Tasa de error al agregar: ", odon, "> :"]))
-                xlw(xl_row, 2, tasaError)
-                xlw(xl_row, 3, "=($B$10 / B{:0d}".format(xl_row) + ") - 1")
+                    nodo_min_err[odon] = tasaError
+#                xlw(xl_row, 1, u"".join([
+#                    "Tasa de error al agregar: ", odon, "> :"]))
+#                xlw(xl_row, 2, tasaError)
+#                xl_row = xlw(xl_row, 3, "=($B$10 / B{:0d}".
+#                             format(xl_row) + ") - 1")
                 self.nt_nueva.Comment = \
                     u"".join([self.nt_nueva.Comment,
-                    "Tasa de error  al agregar: ", odon, "> : ""{:10.4f}\n".
-                              format(tasaError)])
-            set_in = {nodo_min_err.keys()[0]:
-                nodo_min_err[nodo_min_err.keys()[0]] }
+                              "Tasa de error  al agregar: ", odon,
+                              "> : ""{:10.4f}\n".format(tasaError)])
+            set_in[nodo_min_err.keys()[0]] =\
+                nodo_min_err[nodo_min_err.keys()[0]]
             set_test = set_test - set([nodo_min_err.keys()[0]])
-            self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n", "-" * 80 + "\n"])
+            err = nodo_min_err[nodo_min_err.keys()[0]]
+            nodos = ", ".join(set_in.keys())
+            xlw(xl_row, 1, u"Paso incluye <" + nodos + u">:")
+            xlw(xl_row, 2, err)
+            xl_row = xlw(xl_row, 3,
+                         "=($B$10 / B{:0d}".format(xl_row) + ") - 1")
+            self.nt_nueva.Comment = u"".join([self.nt_nueva.Comment,
+                                             "\n", "-" * 80 + "\n"])
             self.red_nula(vars_set)
         return nodo_min_err
+        set_in = {"a":2}
 
     def descripcion_nueva_red(red_nva, err_nv, err1, err2):
         resultados = red_nva.Comment
