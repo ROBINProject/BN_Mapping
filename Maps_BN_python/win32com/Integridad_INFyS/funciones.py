@@ -47,7 +47,7 @@ class pyNetica (object):
     # si no la encuentra arranca en modo limitado
     def __init__(self, lic_dir, desp):
         self.netica_app = Dispatch("Netica.Application")
-        self.licenseFile = os.path.join(lic_dir, "inecol_netica.txt")
+        self.licenseFile = os.path.join(lic_dir, u"inecol_netica.txt")
         try:
             self.licencia = open(self.licenseFile, 'r').read()
         except IOError as e:

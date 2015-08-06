@@ -28,19 +28,31 @@ parser.add_argument("-a", u"--analysis", metavar=u"alguna(s) 0,1,2,3",
 parser.add_argument("-b", "--base", metavar="File_NETA",
                     dest=u"base", default=u"variables_2n.neta",
                     help=u"read nodes from source BNet: redB.neta")
+parser.add_argument("-e", "--equipo", metavar=u"lap_m/esc_m/otro",
+                     dest=u"equipo", default=u"lap_m", 
+                     help=u"selecciona la ubicación de archivos según equipo")
 
 # Recupera informacion de la linea de comandos y establece los parametros
 args = parser.parse_args()
 zvh_seleccionado = args.zvh_type - 1
 net_dsk = args.base
 pruebas = set(map(int, args.pruebas.split(",")))
-netica_dir = u"".join([u"C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/",
-                      u"BN_Mapping/Netica/"])
-nodos_zvh_dic = {u"Zvh_8ph": u"B01_test.neta", u"zvh": u"B02_test.neta",
-                 u"zvh_31": u"B03_test.neta"}
-dir_robin = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN"
+equipo = args.equipo
+
+if equipo == "lap_m":
+    netica_dir = u"".join([u"C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/",
+                           u"BN_Mapping/Netica/"])
+    dir_robin = u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN"
+else:
+    netica_dir = u"".join([u"C:/Users/miguel.equihua/Documents/0-GIT/", 
+                          u"Publicaciones y proyectos/BN_Mapping/Netica/"])
+    dir_robin = u"C:/Users/miguel.equihua/Documents/1 Nube/Google Drive/2 Proyectos/RoBiN"
+    
 dir_datos = u"". join([u"/Datos RoBiN/México/0_Vigente/GIS/",
                       "Mapas_base/2004/train_data_pack/"])
+                           
+nodos_zvh_dic = {u"Zvh_8ph": u"B01_test.neta", u"zvh": u"B02_test.neta",
+                 u"zvh_31": u"B03_test.neta"}
 
 datos_dsk = ["variables_2n.neta", "variables_3n.neta", "variables_4n.neta",
              "variables_5n.neta", "variables_10n.neta"]
