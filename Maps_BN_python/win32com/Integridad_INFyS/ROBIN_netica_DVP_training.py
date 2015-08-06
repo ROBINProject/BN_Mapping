@@ -114,7 +114,7 @@ if set([0]).issubset(pruebas):
     for nn in nodos_zvh_dic:
         err = mez.prueba_RB_naive(xl_row, variables_set, nn, netica_dir, xlwrite)
         xl_row = xl_row
-        xlwrite(xl_row, 1, u"Error modelo \"Naive\" completo <" + nn +"> : " )
+        xlwrite(xl_row, 1, u"Error modelo \"Naive\" completo <" + nn + "> : ")
         xlwrite(xl_row, 2, err)
         xl_row = xlwrite(xl_row, 3, "=($B$10 / B{:0d}".format(xl_row) + ") - 1")
 
@@ -122,10 +122,10 @@ if set([1]).issubset(pruebas):
     mez.pruebas_de_1(xl_row, variables_set, xlwrite)
 
 if set([2]).issubset(pruebas):
-   ccc= mez.pruebas_de_2(xl_row, variables_set, xlwrite)
+    ccc = mez.pruebas_de_2(xl_row, variables_set, xlwrite)
 
 if set([3]).issubset(pruebas):
-       ccc= mez.pruebas_3(xl_row, variables_set, xlwrite)
+    xl_row, ccc = mez.pruebas_3(xl_row, variables_set, xlwrite)
 
 
 # Anota resultados en la hoja de descripcion
@@ -152,7 +152,7 @@ del mez
 os.chdir(u"".join([dir_robin, dir_datos]))
 xl_wd = os.getcwdu()
 node_niveles = os.path.basename(net_dsk).split("_")[1].split(".")[0]
-xl_dsk = xl_wd + u"\\Res_Naive_EI_" + nodo_zvh + "_" + node_niveles + ".xlsx"
+xl_dsk = xl_wd + u"\\Step_Naive_EI_" + nodo_zvh + "_" + node_niveles + ".xlsx"
 
 xl_app.workbook.SaveAs(xl_dsk)
 xl_app.excelapp.Quit()
