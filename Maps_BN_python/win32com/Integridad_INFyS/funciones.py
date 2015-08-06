@@ -322,20 +322,22 @@ class Netica_RB_EcoInt:
                     u"".join([self.nt_nueva.Comment,
                               "Tasa de error  al agregar: ", odon,
                               "> : ""{:10.4f}\n".format(tasaError)])
-            set_in[nodo_min_err.keys()[0]] =\
-                nodo_min_err[nodo_min_err.keys()[0]]
-            set_test = set_test - set([nodo_min_err.keys()[0]])
-            err = nodo_min_err[nodo_min_err.keys()[0]]
-            nodos = ", ".join(set_in.keys())
-            xlw(xl_row, 1, u"Paso incluye <" + nodos + u">:")
-            xlw(xl_row, 2, err)
-            xl_row = xlw(xl_row, 3,
-                         "=($B$10 / B{:0d}".format(xl_row) + ") - 1")
-            self.nt_nueva.Comment = u"".join([self.nt_nueva.Comment,
-                                             "\n", "-" * 80 + "\n"])
+            if nodo_min_err.keys()[0] in set_in:
+                set_test = {}
+            else:
+                set_in[nodo_min_err.keys()[0]] =\
+                    nodo_min_err[nodo_min_err.keys()[0]]
+                set_test = set_test - set([nodo_min_err.keys()[0]])
+                err = nodo_min_err[nodo_min_err.keys()[0]]
+                nodos = ", ".join(set_in.keys())
+                xlw(xl_row, 1, u"Paso incluye <" + nodos + u">:")
+                xlw(xl_row, 2, err)
+                xl_row = xlw(xl_row, 3,
+                             "=($B$10 / B{:0d}".format(xl_row) + ") - 1")
+                self.nt_nueva.Comment = u"".join([self.nt_nueva.Comment,
+                                                  "\n", "-" * 80 + "\n"])
             self.red_nula(vars_set)
         return nodo_min_err
-        set_in = {"a":2}
 
     def descripcion_nueva_red(red_nva, err_nv, err1, err2):
         resultados = red_nva.Comment
