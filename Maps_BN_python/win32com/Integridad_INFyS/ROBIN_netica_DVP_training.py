@@ -139,7 +139,6 @@ if set([2]).issubset(pruebas):
 if set([3]).issubset(pruebas):
     xl_row, ccc = mez.pruebas_3(xl_row, variables_set, xlwrite)
 
-
 # Anota resultados en la hoja de descripcion
 # descripcion_nueva_red(nt_nueva, err_naive, errores, errores2)
 

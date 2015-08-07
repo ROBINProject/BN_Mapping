@@ -337,7 +337,7 @@ class Netica_RB_EcoInt:
                 self.nt_nueva.Comment = u"".join([self.nt_nueva.Comment,
                                                   "\n", "-" * 80 + "\n"])
             self.red_nula(vars_set)
-        return nodo_min_err, xl_row
+        return xl_row, nodo_min_err
 
     def descripcion_nueva_red(red_nva, err_nv, err1, err2):
         resultados = red_nva.Comment
