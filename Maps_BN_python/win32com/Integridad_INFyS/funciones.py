@@ -156,8 +156,7 @@ class Netica_RB_EcoInt:
         self.valorError = tester.ErrorRate(nodo_prueba[0])
         tester.Delete()
         return self.valorError
-    
-    
+
     def entrena_BNet(self, nodos, degree):
         # Aplica el aprendizaje elejido.  Las opciones de aprendizaje son:
         entrenamiento = self.netApp.NewLearner(learn_method.counting)
@@ -184,36 +183,42 @@ class Netica_RB_EcoInt:
                 self.nodosNuevosList_p[pp].DeleteLink(
                     self.nodosNuevosList_p["dem30_sd1000"])
 
-
     def prueba_RB_naive(self, xl_row, vars_set, zvh, netica_dir, xlw):
         # Crea todos los links tipo "Naive" del "nodo_objetivo" hacia los demas
         for pp in sorted(self.nuevos_nodos["infys"]):
             self.nodosNuevosList_p[pp].AddLink(self.nodosNuevosList_p[zvh])
-            self.nodosNuevosList_p[pp].AddLink(self.nodosNuevosList_p[self.nodo_obj])
-            self.nodosNuevosList_p[pp].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
-            self.nodosNuevosList_p[pp].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
+            self.nodosNuevosList_p[pp].AddLink(
+                self.nodosNuevosList_p[self.nodo_obj])
+            self.nodosNuevosList_p[pp].AddLink(
+                self.nodosNuevosList_p["dem30_mean1000"])
+            self.nodosNuevosList_p[pp].AddLink(
+                self.nodosNuevosList_p["dem30_sd1000"])
         # Entrena y prueba la nueva red
         zvh_orig = self.nodo_zvh
         self.nodo_zvh = zvh
         self.entrena_BNet(self.nodosNuevosList_p, 1)
         tasaError = self.prueba_BNet()
-        errorAleat = 1.0 - 1.0/18
-        #
+
         # Anota avance del calculo en la seccion de "descripcion" de la red
         self.red_nula(vars_set)
         self.nodo_zvh = zvh_orig
         return tasaError
-    
+
     def pruebas_de_1(self, xl_row, vars_set, xlw):
         # Prueba la red "un-nodo-a-la-vez" tomado de la lista de variables
-        self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n" * 2, "-" * 80])
+        self.nt_nueva.Comment = "".join([self.nt_nueva.Comment,
+                                         "\n" * 2, "-" * 80])
         errores = {}
         for nodo in sorted(vars_set):
             self.red_nula(vars_set)
-            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_zvh])
-            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_obj])
-            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
-            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
+            self.nodosNuevosList_p[nodo].AddLink(
+                self.nodosNuevosList_p[self.nodo_zvh])
+            self.nodosNuevosList_p[nodo].AddLink(
+                self.nodosNuevosList_p[self.nodo_obj])
+            self.nodosNuevosList_p[nodo].AddLink(
+                self.nodosNuevosList_p["dem30_mean1000"])
+            self.nodosNuevosList_p[nodo].AddLink(
+                self.nodosNuevosList_p["dem30_sd1000"])
             self.entrena_BNet(self.nodosNuevosList_p, 1)
             tasaError = self.prueba_BNet()
             errores[nodo] = tasaError
@@ -222,20 +227,24 @@ class Netica_RB_EcoInt:
             xlw(xl_row, 2, u"".join(["<", nodo, ">: "]))
             xlw(xl_row, 3, tasaError)
         self.red_nula(vars_set)
-    
-    
+
     def pruebas_de_2(self, xl_row, vars_set, xlw):
         # Prueba de la red con pares de variables
-        self.nt_nueva.Comment = "".join([self.nt_nueva.Comment,
-                                    "\n\nBloque de pruebas en bloques de 2"])
-        self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n", "-" * 80])
-        errores, nodo_min_err= {}, {"a":100}
+        self.nt_nueva.Comment = "".join([
+            self.nt_nueva.Comment, "\n\nBloque de pruebas en bloques de 2"])
+        self.nt_nueva.Comment = "".join([
+            self.nt_nueva.Comment, "\n", "-" * 80])
+        errores, nodo_min_err = {}, {"a": 100}
         for nodo in sorted(vars_set):
             self.red_nula(vars_set)
-            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_zvh])
-            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p[self.nodo_obj])
-            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
-            self.nodosNuevosList_p[nodo].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
+            self.nodosNuevosList_p[nodo].AddLink(
+                self.nodosNuevosList_p[self.nodo_zvh])
+            self.nodosNuevosList_p[nodo].AddLink(
+                self.nodosNuevosList_p[self.nodo_obj])
+            self.nodosNuevosList_p[nodo].AddLink(
+                self.nodosNuevosList_p["dem30_mean1000"])
+            self.nodosNuevosList_p[nodo].AddLink(
+                self.nodosNuevosList_p["dem30_sd1000"])
             self.entrena_BNet(self.nodosNuevosList_p, 1)
             tasaError = self.prueba_BNet()
             errores[nodo] = tasaError
@@ -251,14 +260,22 @@ class Netica_RB_EcoInt:
         errores2 = {}
         for odon in sorted(vars_set - set([nodo_1])):
             self.red_nula(vars_set)
-            self.nodosNuevosList_p[odon].AddLink(self.nodosNuevosList_p[self.nodo_zvh])
-            self.nodosNuevosList_p[odon].AddLink(self.nodosNuevosList_p[self.nodo_obj])
-            self.nodosNuevosList_p[odon].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
-            self.nodosNuevosList_p[odon].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
-            self.nodosNuevosList_p[nodo_1].AddLink(self.nodosNuevosList_p[self.nodo_zvh])
-            self.nodosNuevosList_p[nodo_1].AddLink(self.nodosNuevosList_p[self.nodo_obj])
-            self.nodosNuevosList_p[nodo_1].AddLink(self.nodosNuevosList_p["dem30_mean1000"])
-            self.nodosNuevosList_p[nodo_1].AddLink(self.nodosNuevosList_p["dem30_sd1000"])
+            self.nodosNuevosList_p[odon].AddLink(
+                self.nodosNuevosList_p[self.nodo_zvh])
+            self.nodosNuevosList_p[odon].AddLink(
+                self.nodosNuevosList_p[self.nodo_obj])
+            self.nodosNuevosList_p[odon].AddLink(
+                self.nodosNuevosList_p["dem30_mean1000"])
+            self.nodosNuevosList_p[odon].AddLink(
+                self.nodosNuevosList_p["dem30_sd1000"])
+            self.nodosNuevosList_p[nodo_1].AddLink(
+                self.nodosNuevosList_p[self.nodo_zvh])
+            self.nodosNuevosList_p[nodo_1].AddLink(
+                self.nodosNuevosList_p[self.nodo_obj])
+            self.nodosNuevosList_p[nodo_1].AddLink(
+                self.nodosNuevosList_p["dem30_mean1000"])
+            self.nodosNuevosList_p[nodo_1].AddLink(
+                self.nodosNuevosList_p["dem30_sd1000"])
             self.entrena_BNet(self.nodosNuevosList_p, 1)
             tasaError = self.prueba_BNet()
             errores2[nodo_1 + "_" + odon] = tasaError
@@ -266,24 +283,25 @@ class Netica_RB_EcoInt:
                 nodo_min_err.popitem()
                 nodo_min_err[nodo_1 + "_" + odon] = tasaError
             xl_row = xl_row + 1
-            xlw(xl_row, 1, u"".join(["Tasa de error <", nodo_1, "_", odon, "> :"]))
+            xlw(xl_row, 1, u"".join(["Tasa de error <",
+                                     nodo_1, "_", odon, "> :"]))
             xlw(xl_row, 2, tasaError)
             xlw(xl_row, 3, "=($B$10 / B{:0d}".format(xl_row) + ") - 1")
-            self.nt_nueva.Comment = u"".join([self.nt_nueva.Comment, "Tasa de error <",
-                      nodo_1, "_", odon, "> : ""{:10.4f}\n".
-                                        format(tasaError)])
-        self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n", "-" * 80 + "\n"])
+            self.nt_nueva.Comment = u"".join([
+                self.nt_nueva.Comment, "Tasa de error <", nodo_1, "_",
+                odon, "> : ""{:10.4f}\n".format(tasaError)])
+            self.nt_nueva.Comment = "".join([
+                self.nt_nueva.Comment, "\n", "-" * 80 + "\n"])
         self.red_nula(vars_set)
         return nodo_min_err
-        
-    
-    
+
     def pruebas_3(self, xl_row, vars_set, xlw):
         # Prueba de la red con crecimiento stepwise
         self.nt_nueva.Comment = "".join([self.nt_nueva.Comment,
-                                    "\n\nRecorrido stepwise"])
-        self.nt_nueva.Comment = "".join([self.nt_nueva.Comment, "\n", "-" * 80])
-        errores, nodo_min_err= {}, {"a":100}
+                                         "\n\nRecorrido stepwise"])
+        self.nt_nueva.Comment = "".join([
+            self.nt_nueva.Comment, "\n", "-" * 80])
+        nodo_min_err = {"a": 100}
         set_in = {}
         set_test = vars_set
         set_in = {}
@@ -313,11 +331,6 @@ class Netica_RB_EcoInt:
                 if tasaError < nodo_min_err[nodo_min_err.keys()[0]]:
                     nodo_min_err.popitem()
                     nodo_min_err[odon] = tasaError
-#                xlw(xl_row, 1, u"".join([
-#                    "Tasa de error al agregar: ", odon, "> :"]))
-#                xlw(xl_row, 2, tasaError)
-#                xl_row = xlw(xl_row, 3, "=($B$10 / B{:0d}".
-#                             format(xl_row) + ") - 1")
                 self.nt_nueva.Comment = \
                     u"".join([self.nt_nueva.Comment,
                               "Tasa de error  al agregar: ", odon,
