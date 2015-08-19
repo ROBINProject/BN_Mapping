@@ -350,7 +350,7 @@ class Netica_RB_EcoInt:
                 self.nt_nueva.Comment = u"".join([self.nt_nueva.Comment,
                                                   "\n", "-" * 80 + "\n"])
             self.red_nula(vars_set)
-        return xl_row, nodo_min_err
+        return xl_row, nodo_min_err, vars_set
 
     def descripcion_nueva_red(red_nva, err_nv, err1, err2):
         resultados = red_nva.Comment
@@ -369,4 +369,20 @@ class Netica_RB_EcoInt:
         resultados.append("procesamiento terminado ***************")
         resultados.append("Cerrando NETICA!")
         red_nva.Comment = "\n".join(resultados)
-    # -------------------
+
+#    def get_expected_values (red):
+        """
+        Calcula media y varianza de los nodos indicados dada
+        la evidencia ingresada.
+        """
+"""
+        void RetractFindings() Member of Netica.IBNode
+        # void ReadFindings(ref int case_posn, Netica.Streamer stream,
+        # bool add_to_existing, [Netica.BNodes Nodes = null], out int IDnum,
+        # out double freq) Member of Netica.IBNet
+        enterFinding
+        void EnterFinding(object state) Member of Netica.IBNode
+        double FindingsProbability() Member of Netica.IBNet
+        double GetExpectedValue(out double std_dev)
+        Member of Netica.IBNode
+"""

@@ -1,7 +1,7 @@
 #******************************************************************************
 #  Name: concentrates GeoTIFF input and output capabilities
-#  Purpose:  open, close, read and write GeoTIFF rasters 
-#                
+#  Purpose:  open, close, read and write GeoTIFF rasters
+#
 #
 #  Author: Julian Equihua
 
@@ -9,9 +9,7 @@ import sys
 import os
 import numpy as np
 from osgeo import gdal
-from osgeo.gdalconst import GA_ReadOnly 
-from osgeo.gdalconst import GDT_Float32
-from osgeo.gdalconst import GDT_Int16
+from osgeo.gdalconst import GA_ReadOnly, GDT_Float32, GDT_Int16
 
 def readtif(imagepath):
     gdal.AllRegister()
@@ -31,7 +29,7 @@ def createtif(driver,rows,cols,bands,outpath,data_type=32):
 def writetif(outDataset,data,projection,geotransform,order='r'):
     # order controls if the columns or the rows should be considered the observations
     cols = outDataset.RasterXSize
-    rows = outDataset.RasterYSize 
+    rows = outDataset.RasterYSize
 
     if geotransform is not None:
         gt = list(geotransform)
@@ -40,7 +38,7 @@ def writetif(outDataset,data,projection,geotransform,order='r'):
         outDataset.SetGeoTransform(tuple(gt))
     if projection is not None:
         outDataset.SetProjection(projection)
-    
+
     if data.ndim==1:
         outBand = outDataset.GetRasterBand(1)
         outBand.WriteArray(np.resize(data,(rows,cols)),0,0)

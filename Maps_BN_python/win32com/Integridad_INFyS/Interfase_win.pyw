@@ -153,7 +153,10 @@ def entrena_red(self, analisis, zvh, base, equipo):
     xl_dsk = xl_wd + u"\\Step_Naive_EI_" + nodo_zvh + "_" + \
         node_niveles + ".xlsx"
 
-    xl_app.workbook.SaveAs(xl_dsk)
+    try:
+        xl_app.workbook.SaveAs(xl_dsk)
+    except IOError as e:
+        print "Archivo no guardado: <" + e + ">"
     xl_app.excelapp.Quit()
     del xl_app.excelapp
     del xl_app
@@ -171,7 +174,7 @@ class Frame(wx.Frame):
                        "variables_4n.neta", "variables_5n.neta",
                        "variables_10n.neta"]
 
-        self.picture = wx.StaticBitmap(self.panel,size=(100,150),pos=(1,1))
+        self.picture = wx.StaticBitmap(self.panel, size=(100, 150), pos=(1, 1))
         self.picture.SetBitmap(wx.Bitmap('ROBIN_1.jpg'))
 
         # arreglo generals de los componentes del panel

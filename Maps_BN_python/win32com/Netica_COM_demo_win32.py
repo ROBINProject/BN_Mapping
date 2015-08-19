@@ -10,27 +10,27 @@ Contact: equihuam@gmail.com
 
 Works with  Netica 5.19 or later.
 
-It is best to first get this example project working. 
-   Run the latest version of Netica Application (Netica.exe) as Administrator 
-   (e.g. by right-clicking Netica.exe and choosing "Run as Administrator"), 
-   and then exit, to register it as the COM server. Then build this project 
-   (Build->Build Solution), and run it (Debug->Start Debugging). 
-   Should report the probability of Tuberculosis as 0.0104, then 0.09241, 
-   0.3377, and finally 0.050.  If so, your Netica installation and the sample 
+It is best to first get this example project working.
+   Run the latest version of Netica Application (Netica.exe) as Administrator
+   (e.g. by right-clicking Netica.exe and choosing "Run as Administrator"),
+   and then exit, to register it as the COM server. Then build this project
+   (Build->Build Solution), and run it (Debug->Start Debugging).
+   Should report the probability of Tuberculosis as 0.0104, then 0.09241,
+   0.3377, and finally 0.050.  If so, your Netica installation and the sample
    "win32com" python project appears to be in good order.
 
-   Now you can replace the code below with your own or, to add Netica to a 
+   Now you can replace the code below with your own or, to add Netica to a
    different project, just make sure you include the call to
        from win32com.client import Dispatch
 
    For documentation on Netica's objects and functions:
-   Use help (<pointer to the Dispatch object>) 
-   For more information on functions find its Netica-C equivalent name in the 
-   displayed short description, and look up the function in the Netica-C 
-   manual or online at http://www.norsys.com/onLineAPIManual/index.html. If 
-   you are getting the wrong version of Netica's objects, then you need to 
-   run the correct version of Netica.exe first (by right clicking on the 
-   Netica.exe icon and choosing "Run as Administrator"), to register its 
+   Use help (<pointer to the Dispatch object>)
+   For more information on functions find its Netica-C equivalent name in the
+   displayed short description, and look up the function in the Netica-C
+   manual or online at http://www.norsys.com/onLineAPIManual/index.html. If
+   you are getting the wrong version of Netica's objects, then you need to
+   run the correct version of Netica.exe first (by right clicking on the
+   Netica.exe icon and choosing "Run as Administrator"), to register its
    COM definition.
 """
 from win32com.client import Dispatch
@@ -57,9 +57,9 @@ print "Using Netica version " + nt.VersionString
 net_file_name = u"C:/Program Files/Netica/Netica 519/Programming Examples/Netica Demo for C# VS12/ChestClinic.dne"
 streamer = nt.NewStream(net_file_name)
 
-# ReadBNet 'options' can be one of "NoVisualInfo", "NoWindow", 
+# ReadBNet 'options' can be one of "NoVisualInfo", "NoWindow",
 # or the empty string (means create a regular window)
-net = nt.ReadBNet(streamer, "") 
+net = nt.ReadBNet(streamer, "")
 net.compile()
 
 # Lee los valores de creencia que tienen los nodos bajo distintas condiciones
