@@ -51,8 +51,7 @@ def process_on_data_table(lic_arch, net_file_name):
     # ReadBNet 'options' can be one of "NoVisualInfo", "NoWindow",
     # or the empty string (means create a regular window)
     net = nt.ReadBNet(streamer, "")
-    net.compile()
-
+    node_lst = lista_nodos_diccionario(net)
 
     #data_table = np.zeros((1, len(node_lst)))
     names = [n for n in node_lst.keys() if n not in ["zz_delt_vp"]]
@@ -68,7 +67,7 @@ def process_on_data_table(lic_arch, net_file_name):
                            dtype=dtype_nodes)
 
     # Read the beleif values under specified conditions
-    node_lst = lista_nodos_diccionario(net)
+    net.compile()
     net.RetractFindings()
     for nd in node_lst:
         if nd != "zz_delt_vp":
@@ -79,9 +78,21 @@ def process_on_data_table(lic_arch, net_file_name):
     # Se libera el espacio de momoria usado por la red
     net.Delete()
 
+def on_toy():
+    list_users = os.listdir("c:/users")
+    if "miguel.equihua" in list_users:
+        equipo = "esc_m"
+    elif "miguel eq" in list_users:
+        equipo = "lap_m"
+    else:
+        print "hay que especificar la ubicación de los archivos necesarios:"
+        print "     licencia de Netica"
+        print "     Archivos tif de variables"
+        print "     Red entrenada"
+    return equipo
 # ----------------------------------------------------
 
-equipo = "lap_m"
+equipo = on_toy()
 
 if equipo == "lap_m":
     netica_dir = u"".join([
