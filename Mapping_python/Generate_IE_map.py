@@ -21,16 +21,11 @@ def lista_nodos_diccionario(BNet):
     # get number of nodes
     nnodes = nodesList_p.Count
     # Collect all node names in network
-    node_names = {"gral": {}, "infys": {}}
+    node_names = {}
     for i in range(nnodes):
         node_p = nodesList_p[i]   # node_p
         name = node_p.name        # name
-        if re.search(r"^[xyZzdC]", name):
-            node_names["gral"][name] = node_p
-        else:
-            re.search(r"(^ntre|^Diam|^Alt|^Ins|^Sin|^prob|^Psn|^Gpp)",
-                      name)
-            node_names["infys"][name] = node_p
+        node_names[name] = node_p
     return node_names
 
 
@@ -45,7 +40,7 @@ def process_on_data_table(lic_arch, net_file_name):
     licencia = open(lic_arch, "rb").read()
     nt.SetPassword(licencia)
     # Window status could be: Regular, Minimized, Maximized, Hidden
-    nt.SetWindowPosition(status="Hidden")
+    nt.SetWindowPosition(status="Regular")
 
     # Display NETICA version
     print "Using Netica version " + nt.VersionString
@@ -55,15 +50,31 @@ def process_on_data_table(lic_arch, net_file_name):
 
     # ReadBNet 'options' can be one of "NoVisualInfo", "NoWindow",
     # or the empty string (means create a regular window)
-    net = nt.ReadBNet(streamer, "NoVisualInfo")
+    net = nt.ReadBNet(streamer, "")
     net.compile()
+
+
+    #data_table = np.zeros((1, len(node_lst)))
+    names = [n for n in node_lst.keys() if n not in ["zz_delt_vp"]]
+    formats = []
+    for nm in names:
+        if nm == "y":
+            formats.append("int")
+        else:
+            formats.append("float")
+
+    dtype_nodes = {"names": names, "formats": formats}
+    data_table = np.array([(40, 3, 2, 130, 900, 900000, 18)],
+                           dtype=dtype_nodes)
 
     # Read the beleif values under specified conditions
     node_lst = lista_nodos_diccionario(net)
+    net.RetractFindings()
     for nd in node_lst:
-        nd.EnterValue(1.5)
-    expected_val = node_lst["zz_delt_vp"].GetExpectedValue(sd)
-    print "EI mean {:0.4f}".format(expected_val)
+        if nd != "zz_delt_vp":
+            node_lst[nd].EnterValue(data_table[nd][0])
+    expected_val = node_lst["zz_delt_vp"].GetExpectedValue()
+    print "EI mean {:0.4f}".format(expected_val[0])
 
     # Se libera el espacio de momoria usado por la red
     net.Delete()
@@ -109,7 +120,7 @@ for b in xrange(len(files)):
     data_table[:, b] = np.ravel(band)
 
 ### insert process to predict using data_table
-net_file_name = dir_datos + "BN_test_python.neta"
+net_file_name = dir_robin + dir_datos + "BN_test_python.neta"
 ie_map = process_on_data_table(netica_dir, net_file_name)
 
 ### write ie_map to disk
