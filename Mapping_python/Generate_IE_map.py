@@ -28,35 +28,29 @@ def lista_nodos_diccionario(BNet):
         node_names[name] = node_p
     return node_names
 
-
-def process_on_data_table(lic_arch, net_file_name, data):
-    #data_table = np.zeros((1, len(node_lst)))
-    names = [n for n in node_lst.keys() if n not in ["zz_delt_vp"]]
-    formats = []
-    for nm in names:
-        if nm == "y":
-            formats.append("int")
-        else:
-            formats.append("float")
-
-    dtype_nodes = {"names": names, "formats": formats}
-    data_table = np.array([(40, 3, 2, 130, 900, 900000, 18)],
-                           dtype=dtype_nodes)
-
+data_table['DiametroNormal_desvabs'].shape
+data_table[1][1]
+def process_on_data_table(lic_arch, net_file_name, data_table):
     # Read the beleif values under specified conditions
     net.compile()
     net.RetractFindings()
-    for nd in node_lst:
-        if nd != "zz_delt_vp":
-            node_lst[nd].EnterValue(data_table[nd][0])
-    expected_val = node_lst["zz_delt_vp"].GetExpectedValue()
-    print "EI mean {:0.4f}".format(expected_val[0])
+    expected_val = []
+    for j in xrange(len(data_table)-1):
+        for nd in node_lst:
+            if nd != "zz_delt_vp":
+                node_lst[nd].EnterValue(data_table[j][nd])
+        expected_val.append(node_lst["zz_delt_vp"].GetExpectedValue())
+    return expected_val
 
     # Se libera el espacio de momoria usado por la red
     net.Delete()
 
 
 def on_toy():
+    """
+      Detecta si está corriendo en un equipo conocido y ajusta
+      las rutas necesarias.
+    """
     list_users = os.listdir("c:/users")
     if u"miguel.equihua" in list_users:
         equipo = "esc_m"
@@ -114,7 +108,8 @@ node_lst = lista_nodos_diccionario(net)
 
 dir_tif = re.sub(u"train_data_pack/", "", dir_robin + dir_datos)
 files = {re.sub(".tif", "", re.sub("2004_", "", f1)): f1
-         for f1 in os.listdir(dir_tif) if re.findall("tif$", f1)}
+         for f1 in os.listdir(dir_tif) if re.findall("tif$", f1)}:
+
 for f in files.keys():
     if f not in node_lst:
         files.pop(f)
@@ -130,15 +125,17 @@ driver = dataset.GetDriver()
 # prediction table (pixels are rows, columns are variables)
 names = files.keys()
 formats = ["float" for n in names]
-types ={"names": names, "formats": formats}
-data_table = np.zeros((cols * rows, len(files)), dtype = types)
+types = {"names": names, "formats": formats}
+data_table = pp = pd.DataFrame(index=xrange(cols*rows), columns=names)
 
 for b in xrange(len(files)):
     image, rows, cols, bands = readtif(dir_tif + files.values()[b])
     band = image.GetRasterBand(1)
     band = band.ReadAsArray(0, 0, cols, rows).astype(float)
-    data_table[:, b] = np.ravel(band)
+    band = [b1 if b1 >-999  else -999 for b1 in np.ravel(band)]
+    data_table[names[b]] = np.ravel(band)
 
+data_table.iat[0,2]
 ### insert process to predict using data_table
 ie_map = process_on_data_table(netica_dir, net_file_name, data_table)
 
