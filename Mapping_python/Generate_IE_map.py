@@ -28,18 +28,20 @@ def lista_nodos_diccionario(BNet):
         node_names[name] = node_p
     return node_names
 
-data_table['DiametroNormal_desvabs'].shape
-data_table[1][1]
+
 def process_on_data_table(lic_arch, net_file_name, data_table):
     # Read the beleif values under specified conditions
     net.compile()
-    net.RetractFindings()
     expected_val = []
-    for j in xrange(len(data_table)-1):
-        for nd in node_lst:
-            if nd != "zz_delt_vp":
-                node_lst[nd].EnterValue(data_table[j][nd])
-        expected_val.append(node_lst["zz_delt_vp"].GetExpectedValue())
+    for j in xrange(data_table.shape[0]):
+        net.RetractFindings()
+        if data_table["dem30_mean1000"][j] > -999:
+            for nd in data_table.columns:
+                if nd != "zz_delt_vp" and data_table[nd][j] > -999:
+                    node_lst[nd].EnterValue(data_table[nd][j])
+            expected_val.append(node_lst["zz_delt_vp"].GetExpectedValue())
+        else:
+            expected_val.append(-999)
     return expected_val
 
     # Se libera el espacio de momoria usado por la red
@@ -82,10 +84,9 @@ dir_datos = u"". join([u"/Datos RoBiN/México/0_Vigente/GIS/",
                       u"Mapas_base/2004/train_data_pack/"])
 
 # Activate Netica and Read BN
-print "Welcome to Netica API for COM with Python!"
-
 # Vincula la interface COM de NETICA y activa la aplicación
 nt = Dispatch("Netica.Application")
+print "Welcome to Netica API for COM with Python!"
 
 # Lee la licensia de activasión de Netica
 lic_arch = netica_dir + "/inecol_netica.txt"
@@ -108,8 +109,7 @@ node_lst = lista_nodos_diccionario(net)
 
 dir_tif = re.sub(u"train_data_pack/", "", dir_robin + dir_datos)
 files = {re.sub(".tif", "", re.sub("2004_", "", f1)): f1
-         for f1 in os.listdir(dir_tif) if re.findall("tif$", f1)}:
-
+         for f1 in os.listdir(dir_tif) if re.findall("tif$", f1)}
 for f in files.keys():
     if f not in node_lst:
         files.pop(f)
@@ -124,18 +124,15 @@ driver = dataset.GetDriver()
 
 # prediction table (pixels are rows, columns are variables)
 names = files.keys()
-formats = ["float" for n in names]
-types = {"names": names, "formats": formats}
 data_table = pp = pd.DataFrame(index=xrange(cols*rows), columns=names)
 
 for b in xrange(len(files)):
     image, rows, cols, bands = readtif(dir_tif + files.values()[b])
     band = image.GetRasterBand(1)
     band = band.ReadAsArray(0, 0, cols, rows).astype(float)
-    band = [b1 if b1 >-999  else -999 for b1 in np.ravel(band)]
+    band = [b1 if b1 > -999 else -999 for b1 in np.ravel(band)]
     data_table[names[b]] = np.ravel(band)
 
-data_table.iat[0,2]
 ### insert process to predict using data_table
 ie_map = process_on_data_table(netica_dir, net_file_name, data_table)
 
