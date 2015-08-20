@@ -1,3 +1,6 @@
+ #!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import os
 
 import numpy as np
@@ -42,6 +45,7 @@ def process_on_data_table(lic_arch, net_file_name, data_table):
             expected_val.append(node_lst["zz_delt_vp"].GetExpectedValue())
         else:
             expected_val.append(-999)
+        print u"Renglón: {0}".format(j)
     return expected_val
 
     # Se libera el espacio de momoria usado por la red
@@ -63,35 +67,36 @@ def on_toy():
         print "     licencia de Netica"
         print "     Archivos tif de variables"
         print "     Red entrenada"
-    return equipo
+        
+    if equipo == "lap_m":
+        netica_dir = u"".join([
+            u"C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/",
+            u"BN_Mapping/Netica/"])
+        dir_robin =\
+            u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN"
+    else:
+        netica_dir = u"".join([u"C:/Users/miguel.equihua/Documents/0-GIT/",
+                              u"Publicaciones y proyectos/BN_Mapping/Netica/"])
+        dir_robin = u"C:/Users/miguel.equihua/Documents/1 Nube/" +\
+                    u"Google Drive/2 Proyectos/RoBiN"
+
+    dir_datos = u"". join([u"/Datos RoBiN/México/0_Vigente/GIS/",
+                      u"Mapas_base/2004/train_data_pack/"])
+    return equipo, netica_dir, dir_robin, dir_datos
 # ----------------------------------------------------
 
-equipo = on_toy()
+# Find out if a known file configuration is available and set paths accordingly
+equipo, netica_dir, dir_robin, dir_datos = on_toy()
 
-if equipo == "lap_m":
-    netica_dir = u"".join([
-        u"C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/",
-        u"BN_Mapping/Netica/"])
-    dir_robin =\
-        u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN"
-else:
-    netica_dir = u"".join([u"C:/Users/miguel.equihua/Documents/0-GIT/",
-                          u"Publicaciones y proyectos/BN_Mapping/Netica/"])
-    dir_robin = u"C:/Users/miguel.equihua/Documents/1 Nube/" +\
-                u"Google Drive/2 Proyectos/RoBiN"
-
-dir_datos = u"". join([u"/Datos RoBiN/México/0_Vigente/GIS/",
-                      u"Mapas_base/2004/train_data_pack/"])
-
-# Activate Netica and Read BN
-# Vincula la interface COM de NETICA y activa la aplicación
+# Link NETICA COM interface and starts the application
 nt = Dispatch("Netica.Application")
 print "Welcome to Netica API for COM with Python!"
 
-# Lee la licensia de activasión de Netica
+# Read license to use full NETICA
 lic_arch = netica_dir + "/inecol_netica.txt"
 licencia = open(lic_arch, "rb").read()
 nt.SetPassword(licencia)
+
 # Window status could be: Regular, Minimized, Maximized, Hidden
 nt.SetWindowPosition(status="Regular")
 
@@ -99,6 +104,7 @@ nt.SetWindowPosition(status="Regular")
 print "Using Netica version " + nt.VersionString
 net_file_name = dir_robin + dir_datos +\
  "EI_Naive_Step_n10_zvh31_peinada_sin_medias.neta"
+ 
 # Prepare the stream to read requested BN
 streamer = nt.NewStream(net_file_name)
 

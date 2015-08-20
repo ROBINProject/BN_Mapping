@@ -66,8 +66,8 @@ ubica.trabajo <- function(equipo="default", gd=T)
     gd.robin <- choose.dir(caption="Dónde están tus datos de ROBIN?")
   
   # sub-directorios de interés
-  dir.base_2004 <- "Datos RoBiN/México/0_Vigente/Datos Base/all_vars_table_2004"
-  dir.base_2007 <- "Datos RoBiN/México/0_Vigente/Datos Base/all_vars_table_2007"
+  dir.base_2004 <- "Datos RoBiN/México/0_Vigente/GIS/Mapas_base/2004"
+  dir.base_2007 <- "Datos RoBiN/México/0_Vigente/GIS/Mapas_base/2007"
   dir.output    <- "Datos RoBiN/México/0_Vigente/Resultados"
   dir.GIS.in    <- "Datos RoBiN/México/0_Vigente/GIS/Mapas_base"
   dir.GIS.out   <- "Datos RoBiN/México/0_Vigente/GIS/Mapas_integridad"
