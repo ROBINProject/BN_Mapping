@@ -304,7 +304,6 @@ class Netica_RB_EcoInt:
         nodo_min_err = {"a": 100}
         set_in = {}
         set_test = vars_set
-        set_in = {}
         while set_test != {}:
             for odon in sorted(set_test):
                 self.red_nula(vars_set)

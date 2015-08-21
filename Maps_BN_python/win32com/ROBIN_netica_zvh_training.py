@@ -232,46 +232,50 @@ def pruebas_de_2 (nd_obj, nodos_p, vars_lst):
     red_nula (nd_obj, vars_lst)    
 
 def pruebas_de_3 (nd_obj, nodos_p, vars_lst):
-    # Prueba de la red con pares de variables
-    nt_nueva.Comment = "".join([nt_nueva.Comment, 
-                                "\n\nBloque de pruebas en bloques de 2"])
-    nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80])
-    errores2 = {} 
-    for uno in sorted(vars_lst)[:-2]:
-        red_nula(nd_obj, vars_lst)    
-        nodos_p[uno].AddLink(nodos_p[nd_obj])
-        nodos_p[uno].AddLink(nodos_p["dem30_mean1000"])
-        nodos_p[uno].AddLink(nodos_p["dem30_sd1000"])
-        i = vars_lst.index(uno) + 1
-        nt_nueva.Comment = "".join([nt_nueva.Comment, "\n"])
-        for dos in sorted(vars_lst)[i:-1]:
-            nodos_p[dos].AddLink(nodos_p[nd_obj])
-            nodos_p[dos].AddLink(nodos_p["dem30_mean1000"])
-            nodos_p[dos].AddLink(nodos_p["dem30_sd1000"])
-            j = vars_lst.index(dos) + 1
-            j = 35
-            for tres in sorted(vars_lst)[j:]:
-                nodos_p[tres].AddLink(nodos_p[nd_obj])
-                nodos_p[tres].AddLink(nodos_p["dem30_mean1000"])
-                nodos_p[tres].AddLink(nodos_p["dem30_sd1000"])
-                entrena_BNet (nodos_p, casos_st, 1)
-                tasaError = prueba_BNet(nd_obj, casos_st)
-                errores2 ["".join([uno, "_", dos, "_", tres])] = tasaError
-                print "".join(["Tasa de error <", uno, "_", dos, "_", tres, 
-                               "> : {:10.4f}".format(tasaError)])
-                nt_nueva.Comment = "".join([nt_nueva.Comment, "Tasa de error <", 
-                          uno, "_", dos, "_", tres, 
-                          "> : ""{:10.4f}\n".format(tasaError)])
-                red_nula (nd_obj, vars_lst)    
-                nodos_p[uno].AddLink(nodos_p[nd_obj])
-                nodos_p[uno].AddLink(nodos_p["dem30_mean1000"])
-                nodos_p[uno].AddLink(nodos_p["dem30_sd1000"])
-                nodos_p[dos].AddLink(nodos_p[nd_obj])
-                nodos_p[dos].AddLink(nodos_p["dem30_mean1000"])
-                nodos_p[dos].AddLink(nodos_p["dem30_sd1000"])
-    nt_nueva.Comment = "".join([nt_nueva.Comment, "\n", "-" * 80, "\n"])
-    red_nula (nd_obj, vars_lst)    
-
+    # Prueba de la red con crecimiento stepwise
+    nt_nueva.Comment = "".join([nt_nueva.Comment,
+                                     "\n\nRecorrido stepwise"])
+    nt_nueva.Comment = "".join([
+        nt_nueva.Comment, "\n", "-" * 80])
+    nodo_min_err = {"a": 100}
+    set_test = vars_set
+    set_in = {}
+    while set_test != {}:
+        for odon in sorted(set_test):
+            red_nula(nd_obj, vars_lst)
+            for n_in in set_in:
+                nodos_p[n_in].AddLink(nodos_p[nd_obj])
+                nodos_p[n_in].AddLink(nodos_p["dem30_mean1000"])
+                nodos_p[n_in].AddLink(nodos_p["dem30_sd1000"])
+            # New variable to test
+            nodos_p[odon].AddLink(nodos_p[nd_obj])
+            nodos_p[odon].AddLink(nodos_p["dem30_mean1000"])
+            nodos_p[odon].AddLink(nodos_p["dem30_sd1000"])
+            entrena_BNet(nodos_p, 1)
+            tasaError = prueba_BNet()
+            if tasaError < nodo_min_err[nodo_min_err.keys()[0]]:
+                nodo_min_err.popitem()
+                nodo_min_err[odon] = tasaError
+            nt_nueva.Comment = u"".join([nt_nueva.Comment,
+                                        "Tasa de error  al agregar: ", odon,
+                                        "> : ""{:10.4f}\n".format(tasaError)])
+        if nodo_min_err.keys()[0] in set_in:
+            set_test = {}
+        else:
+            set_in[nodo_min_err.keys()[0]] =\
+                nodo_min_err[nodo_min_err.keys()[0]]
+            set_test = set_test - set([nodo_min_err.keys()[0]])
+            err = nodo_min_err[nodo_min_err.keys()[0]]
+            nodos = ", ".join(set_in.keys())
+            nt_nueva.Comment = u"Paso incluye <" + nodos + u">: {:6.4f}".format(err)
+            xl_row = xlw(xl_row, 3,
+                         "=($B$10 / B{:0d}".format(xl_row) + ") - 1")
+            nt_nueva.Comment = u"".join([nt_nueva.Comment,
+                                              "\n", "-" * 80 + "\n"])
+        red_nula(nd_obj, vars_lst)
+        return xl_row, nodo_min_err, vars_set
+        
+        
 def descripcion_nueva_red (red_nva, err_nv, err1, err2):
     resultados = red_nva.Comment
     resultados.append ("\n" + "-" * 80)
