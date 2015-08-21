@@ -35,6 +35,8 @@ def lista_nodos_diccionario(BNet):
 def process_on_data_table(lic_arch, net_file_name, data_table):
     # Read the beleif values under specified conditions
     net.compile()
+    # BELIEF_UPDATE =  0x100 or greater to set AutoUpdate on, 0 is off
+    net.AutoUpdate = 0
     expected_val = []
     for j in xrange(data_table.shape[0]):
         net.RetractFindings()
@@ -67,7 +69,7 @@ def on_toy():
         print "     licencia de Netica"
         print "     Archivos tif de variables"
         print "     Red entrenada"
-        
+
     if equipo == "lap_m":
         netica_dir = u"".join([
             u"C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/",
@@ -81,7 +83,7 @@ def on_toy():
                     u"Google Drive/2 Proyectos/RoBiN"
 
     dir_datos = u"". join([u"/Datos RoBiN/México/0_Vigente/GIS/",
-                      u"Mapas_base/2004/train_data_pack/"])
+                           u"Mapas_base/2004/train_data_pack/"])
     return equipo, netica_dir, dir_robin, dir_datos
 # ----------------------------------------------------
 
@@ -98,19 +100,19 @@ licencia = open(lic_arch, "rb").read()
 nt.SetPassword(licencia)
 
 # Window status could be: Regular, Minimized, Maximized, Hidden
-nt.SetWindowPosition(status="Regular")
+nt.SetWindowPosition(status="Hidden")
 
 # Display NETICA version
 print "Using Netica version " + nt.VersionString
 net_file_name = dir_robin + dir_datos +\
  "EI_Naive_Step_n10_zvh31_peinada_sin_medias.neta"
- 
+
 # Prepare the stream to read requested BN
 streamer = nt.NewStream(net_file_name)
 
 # ReadBNet 'options' can be one of "NoVisualInfo", "NoWindow",
 # or the empty string (means create a regular window)
-net = nt.ReadBNet(streamer, "")
+net = nt.ReadBNet(streamer, "NoVisualInfo")
 node_lst = lista_nodos_diccionario(net)
 
 dir_tif = re.sub(u"train_data_pack/", "", dir_robin + dir_datos)
