@@ -1,4 +1,4 @@
- #!/usr/bin/python
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 import os
@@ -37,21 +37,19 @@ def process_on_data_table(lic_arch, net_file_name, data_table):
     net.compile()
     # BELIEF_UPDATE =  0x100 or greater to set AutoUpdate on, 0 is off
     net.AutoUpdate = 0
-    expected_val = []
+    integrity_val = []
     for j in xrange(data_table.shape[0]):
         net.RetractFindings()
-        if data_table["dem30_mean1000"][j] > -999:
-            for nd in data_table.columns:
-                if nd != "zz_delt_vp" and data_table[nd][j] > -999:
-                    node_lst[nd].EnterValue(data_table[nd][j])
-            expected_val.append(node_lst["zz_delt_vp"].GetExpectedValue())
-        else:
-            expected_val.append(-999)
-        print u"Renglón: {0}".format(j)
-    return expected_val
-
+        for nd in data_table.columns:
+            if nd != "zz_delt_vp" and pd.notnull(data_table[nd][j]):
+                node_lst[nd].EnterValue(data_table[nd][j])
+                # Get mean and standard deviation
+                expected_val = node_lst["zz_delt_vp"].GetExpectedValue()
+        integrity_val.append(1 - expected_val[0] / 18)
+#        print u"Valor esperado: {0},  ---> {1}".format(1 - expected_val[0] / 18, j)
     # Se libera el espacio de momoria usado por la red
     net.Delete()
+    return integrity_val
 
 
 def on_toy():
@@ -62,28 +60,31 @@ def on_toy():
     list_users = os.listdir("c:/users")
     if u"miguel.equihua" in list_users:
         equipo = "esc_m"
+        netica_dir = u"".join([u"C:/Users/miguel.equihua/Documents/0-GIT/",
+                              u"Publicaciones y proyectos/BN_Mapping/Netica/"])
+        dir_robin = u"C:/Users/miguel.equihua/Documents/1 Nube/" +\
+                    u"Google Drive/2 Proyectos/RoBiN"
+        dir_datos = u"". join([u"/Datos RoBiN/México/0_Vigente/GIS/",
+                               u"Mapas_base/2004/train_data_pack/"])
     elif u"Miguel" in list_users:
         equipo = "lap_m"
-    else:
-        print "Hay que especificar la ubicación de los archivos necesarios:"
-        print "     licencia de Netica"
-        print "     Archivos tif de variables"
-        print "     Red entrenada"
-
-    if equipo == "lap_m":
         netica_dir = u"".join([
             u"C:/Users/Miguel/Documents/0 Versiones/2 Proyectos/",
             u"BN_Mapping/Netica/"])
         dir_robin =\
             u"C:/Users/Miguel/Documents/1 Nube/GoogleDrive/2 Proyectos/RoBiN"
+        dir_datos = u"". join([u"/Datos RoBiN/México/0_Vigente/GIS/",
+                               u"Mapas_base/2004/train_data_pack/"])
+    elif u"Julian" in list_users:
+        equipo = "esc_jul_casa"
+        netica_dir = u"E:/repositories/BN_Mapping/Netica_not_to_share/"
+        dir_robin = u"E:/work/"
+        dir_datos = u"20150822_IEmaps/"
     else:
-        netica_dir = u"".join([u"C:/Users/miguel.equihua/Documents/0-GIT/",
-                              u"Publicaciones y proyectos/BN_Mapping/Netica/"])
-        dir_robin = u"C:/Users/miguel.equihua/Documents/1 Nube/" +\
-                    u"Google Drive/2 Proyectos/RoBiN"
-
-    dir_datos = u"". join([u"/Datos RoBiN/México/0_Vigente/GIS/",
-                           u"Mapas_base/2004/train_data_pack/"])
+        print "Hay que especificar la ubicación de los archivos necesarios:"
+        print "     licencia de Netica"
+        print "     Archivos tif de variables"
+        print "     Red entrenada"
     return equipo, netica_dir, dir_robin, dir_datos
 # ----------------------------------------------------
 
@@ -104,8 +105,7 @@ nt.SetWindowPosition(status="Hidden")
 
 # Display NETICA version
 print "Using Netica version " + nt.VersionString
-net_file_name = dir_robin + dir_datos +\
- "EI_Naive_Step_n10_zvh31_peinada_sin_medias.neta"
+net_file_name = dir_robin + dir_datos + u"IE_test_web_mapping.neta"
 
 # Prepare the stream to read requested BN
 streamer = nt.NewStream(net_file_name)
@@ -115,7 +115,7 @@ streamer = nt.NewStream(net_file_name)
 net = nt.ReadBNet(streamer, "NoVisualInfo")
 node_lst = lista_nodos_diccionario(net)
 
-dir_tif = re.sub(u"train_data_pack/", "", dir_robin + dir_datos)
+dir_tif = re.sub(u"train_data_pack/TIFs", "", dir_robin + dir_datos)
 files = {re.sub(".tif", "", re.sub("2004_", "", f1)): f1
          for f1 in os.listdir(dir_tif) if re.findall("tif$", f1)}
 for f in files.keys():
@@ -132,14 +132,20 @@ driver = dataset.GetDriver()
 
 # prediction table (pixels are rows, columns are variables)
 names = files.keys()
-data_table = pp = pd.DataFrame(index=xrange(cols*rows), columns=names)
+# data_table = pp = pd.DataFrame(index=xrange(cols*rows), columns=names)
 
-for b in xrange(len(files)):
-    image, rows, cols, bands = readtif(dir_tif + files.values()[b])
-    band = image.GetRasterBand(1)
-    band = band.ReadAsArray(0, 0, cols, rows).astype(float)
-    band = [b1 if b1 > -999 else -999 for b1 in np.ravel(band)]
-    data_table[names[b]] = np.ravel(band)
+#for b in xrange(len(files)):
+#    image, rows, cols, bands = readtif(dir_tif + files.values()[b])
+#    band = image.GetRasterBand(1)
+#    band = band.ReadAsArray(0, 0, cols, rows).astype(float)
+#    band = [b1 if b1 > -999 else -999 for b1 in np.ravel(band)]
+#    data_table[names[b]] = np.ravel(band)
+
+# read table using pandas
+os.chdir(dir_robin + dir_datos)
+data = pd.read_csv(u"bn_ie_tabfinal_20150830.csv", na_values = "*")
+data_table = data[node_lst.keys()]
+del data
 
 ### insert process to predict using data_table
 ie_map = process_on_data_table(netica_dir, net_file_name, data_table)

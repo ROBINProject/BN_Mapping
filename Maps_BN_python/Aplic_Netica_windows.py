@@ -4,7 +4,7 @@ Created on Sat Jun 20 01:09:47 2015
 
 @author: Miguel
 
-Example of wrapping Netica.dll using ctypes. 
+Example of wrapping Netica.dll using ctypes.
 """
 
 # import ctypes for wrapping netica.dll
@@ -34,8 +34,6 @@ def find(pattern, path):
                 result.append(os.path.join(root, name))
     return result
 
-
-
 # constants
 MESGLEN = 600
 NO_VISUAL_INFO=0
@@ -51,6 +49,24 @@ DISCRETE_TYPE = 2
 TEXT_TYPE = 3
 BELIEF_UPDATE = 0x100
 
+def GetNodeExpectedValue(libN, cnode):
+    std_dev = c_double()
+    # make a temporary function variable to be able to set the return value
+    tmpNeticaFun = libN.GetNodeExpectedValue_bn
+    tmpNeticaFun.restype = c_double
+    expected_val = tmpNeticaFun(cnode, byref(std_dev), None, None)
+    return expected_val, std_dev.value
+
+def EnterNodeValue(libN, cnode, cval):
+    libN.EnterNodeValue_bn(cnode, c_double(cval))
+
+def RetractNetFindings(libN, cnet):
+    libN.RetractNetFindings_bn(cnet)
+
+def EnterFinding(libN, cnode, cval):
+    libN.EnterFinding_bn(cnode, c_double(cval))
+
+
 # find and load the library
 netica_dir = os.path.abspath("../Netica/")
 libm = windll.LoadLibrary(find_library(netica_dir + "/netica"))
@@ -60,8 +76,8 @@ libm = windll.LoadLibrary(find_library(netica_dir + "/netica"))
 # New NETICA environment
 # Initialize a pynetica instance/env using password in a text file
 licensefile = netica_dir + "/inecol_netica.txt"
-licensia = open(licensefile, 'r').readlines()[0].strip().split()[0]
-env_p = c_void_p(libm.NewNeticaEnviron_ns(licensia, None, None))
+licencia = open(licensefile, 'r').readlines()[0].strip().split()[0]
+env_p = c_void_p(libm.NewNeticaEnviron_ns(licencia, None, None))
 
 # Initialize NETICA environment
 mesg = create_string_buffer(MESGLEN)
@@ -88,7 +104,7 @@ compile net
 libm.CompileNet_bn(netica_net)
 
 # Set autoupdate
-libm.SetNetAutoUpdate_bn(net_p, 1)
+saved = libm.SetNetAutoUpdate_bn(net_p, 1)
 libm.GetNetAutoUpdate_bn(net_p)
 
 
@@ -116,17 +132,17 @@ node_p = c_void_p(libm.GetNodeNamed_bn("Tuberculosis", net_p)) # node_p
 Returns the node name as string
 """
 # (const node_bn* node)
-name = c_char_p(libm.GetNodeName_bn(node_p)) # name    
+name = c_char_p(libm.GetNodeName_bn(node_p)) # name
 name.value
 
 
 """
-Returns DISCRETE_TYPE if the variable corresponding 
-to node is discrete (digital), and CONTINUOUS_TYPE 
+Returns DISCRETE_TYPE if the variable corresponding
+to node is discrete (digital), and CONTINUOUS_TYPE
 if it is continuous (analog)
 """
 # (const node_bn* node)
-node_type = c_int(libm.GetNodeType_bn(node_p)) # node_type      
+node_type = c_int(libm.GetNodeType_bn(node_p)) # node_type
 if node_type.value == DISCRETE_TYPE:
     print ("Discrete node")
 else:
@@ -144,26 +160,22 @@ get node beliefs
 """
 
 # (node_bn* node)
-libm.EnterFinding_bn(node_p,1)
+EnterFinding(libm, node_p, 1)
 prob_bn = libm.GetNodeBeliefs_bn(node_p) # prob_bn
 prob_bn = ct.cast(prob_bn, ct.POINTER(ct.c_float))[0:nstates.value]
 
 # Value for a continuos node
 # (node_bn* node, double value)
-libm.EnterNodeValue_bn(node_p, 2)
-
+EnterNodeValue(libm, node_p, 1.5)
 
 """
 Returns the expected real value of node, based on the current beliefs
-for node, and if std_dev is non-NULL, *std_dev will be set to the 
-standard deviation. Returns UNDEF_DBL if the expected value couldn't 
+for node, and if std_dev is non-NULL, *std_dev will be set to the
+standard deviation. Returns UNDEF_DBL if the expected value couldn't
 be calculated.
 """
 # (node_bn* node, double* std_dev, double* x3, double* x4)
-stdev = c_double(9999) # standard deviation
-x3 = c_double_p()
-x4 = c_double_p()
-expvalue = c_double(libm.GetNodeExpectedValue_bn(node_p, byref(stdev), x3, x4)) # expected value
+expvalue = GetNodeExpectedValue(libm, node_p) # expected value
 
 # Sensitivity
 # Type might be: VARIANCE_OF_REAL_SENSV or ENTROPY_SENSV

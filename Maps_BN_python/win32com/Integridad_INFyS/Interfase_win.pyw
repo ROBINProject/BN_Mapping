@@ -121,10 +121,10 @@ def entrena_red(self, analisis, zvh, base, equipo):
         mez.pruebas_de_1(xl_row, variables_set, xlwrite)
 
     if set([2]).issubset(pruebas):
-        ccc = mez.pruebas_de_2(xl_row, variables_set, xlwrite)
+        error = mez.pruebas_de_2(xl_row, variables_set, xlwrite)
 
     if set([3]).issubset(pruebas):
-        xl_row, ccc = mez.pruebas_3(xl_row, variables_set, xlwrite)
+        xl_row, error, var_set = mez.pruebas_3(xl_row, variables_set, xlwrite)
 
     # Anota resultados en la hoja de descripcion
     # descripcion_nueva_red(nt_nueva, err_naive, errores, errores2)

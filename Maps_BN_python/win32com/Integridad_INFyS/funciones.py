@@ -159,7 +159,7 @@ class Netica_RB_EcoInt:
 
     def entrena_BNet(self, nodos, degree):
         # Aplica el aprendizaje elejido.  Las opciones de aprendizaje son:
-        entrenamiento = self.netApp.NewLearner(learn_method.counting)
+        entrenamiento = self.netApp.NewLearner(learn_method.EM)
         entrenamiento.LearnCPTs(nodos, self.casos, degree)  # Degree usualy 1
         self.nt_nueva.compile()
 
