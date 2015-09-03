@@ -44,10 +44,7 @@ def process_on_data_table(lic_arch, net_file_name, data_table):
         [node_lst[nd].EnterValue(data_table[nd][j]) for nd
          in data_table.columns
          if nd != "zz_delt_vp" and pd.notnull(data_table[nd][j])]
-#        for nd in data_table.columns:
-#            if nd != "zz_delt_vp" and pd.notnull(data_table[nd][j]):
-#                node_lst[nd].EnterValue(data_table[nd][j])
-#                # Get mean and standard deviation
+        # Get mean and standard deviation
         expected_val = node_lst["zz_delt_vp"].GetExpectedValue()
         integrity_val.append(1 - expected_val[0] / 18)
 #        print u"Valor esperado: {0},  ---> {1}".format(1-expected_val[0]/18, j)
