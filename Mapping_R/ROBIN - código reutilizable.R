@@ -7,7 +7,7 @@ if(!require(installr)) {
   install.packages("installr"); require(installr)} #load / install+load installr
 
 # this will start the updating process of your R installation.  
-updateR() 
+updateR()
 
 if (!require(ggplot2)) {install.packages("ggplot2"); require(ggplot2)}
 if (!require(installr)) {install.packages("installr"); require(installr)}
